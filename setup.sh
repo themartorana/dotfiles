@@ -3,7 +3,7 @@
 echo "Setting up via dotfiles..."
 
 CHECKFILE="$HOME/.config/initial-setup-done"
-if [ ! -f $CHECKFILE ]; then
+if [ -f $CHECKFILE ]; then
     echo "Initial setup already done"
     exit 0
 fi
