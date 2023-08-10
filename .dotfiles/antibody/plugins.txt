@@ -11,6 +11,9 @@ junegunn/fzf
 # Pure shell style: https://github.com/sindresorhus/pure
 sindresorhus/pure
 
+# ASDF
+kiurchv/asdf.plugin.zsh
+
 # Syntax highlighting and backwards search
 zdharma/fast-syntax-highlighting
 zsh-users/zsh-history-substring-search
