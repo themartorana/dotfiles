@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 echo "Setting up via dotfiles..."
 
 CHECKFILE="$HOME/.config/initial-setup-done"
@@ -12,7 +14,7 @@ fi
 mkdir -p $HOME/bin
 mkdir -p $HOME/code
 mkdir -p $HOME/.config
-cp -v .config/* $HOME/.config
+cp -rv .config/* $HOME/.config
 
 # Run zsh/setup.sh
 source $HOME/.config/zsh/setup.sh
