@@ -1,0 +1,41 @@
+export PATH="$HOME/bin:$PATH"
+
+source $HOME/.config/antibody/run.sh
+
+# History
+SAVEHIST=10000
+HISTSIZE=10000
+HISTFILE=~/.zsh_history
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_FIND_NO_DUPS
+setopt INC_APPEND_HISTORY
+setopt EXTENDED_HISTORY
+
+# compinit
+autoload -U compinit
+setopt EXTENDEDGLOB
+for dump in $HOME/.zcompdump(#qN.m1); do
+  compinit
+  if [[ -s "$dump" && (! -s "$dump.zwc" || "$dump" -nt "$dump.zwc") ]]; then
+    zcompile "$dump"
+  fi
+done
+unsetopt EXTENDEDGLOB
+compinit -C
+
+# Antibody
+source $HOME/.config/antibody/antibody.zsh
+
+# Completion - tab menu, coloring, fuzzy matching
+zstyle ':completion:*' menu select=2
+zstyle ':completion:*' list-colors 'exfxcxdxbxegedabagacad'
+zstyle ':completion:*' matcher-list '' \
+  'm:{a-z\-}={A-Z\_}' \
+  'r:[^[:alpha:]]||[[:alpha:]]=** r:|=* m:{a-z\-}={A-Z\_}' \
+  'r:|?=** m:{a-z\-}={A-Z\_}'
+
+# FZF
+source $HOME/.config/fzf/fzf.zsh
+
+# Below here you can put anything else you like
