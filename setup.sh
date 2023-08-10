@@ -27,7 +27,7 @@ source $HOME/.config/antibody/setup.sh
 
 # Change shell
 ZSH=$(which zsh)
-chsh -s $ZSH
+sudo chsh -s $(which zsh) $(whoami) # https://askubuntu.com/a/1325754
 
 # Make sure we don't do it again
 touch $CHECKFILE
