@@ -20,6 +20,9 @@ if [ ! -f $CHECKFILE ]; then
     # Install antibody
     source $HOME/.dotfiles/antibody/setup.sh
 
+    # Install ASDF
+    source $HOME/.dotfiles/asdf/setup.sh
+
     # Make sure we don't do it again
     touch $CHECKFILE
 fi
