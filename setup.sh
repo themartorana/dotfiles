@@ -24,6 +24,10 @@ if [ ! -f $CHECKFILE ]; then
     touch $CHECKFILE
 fi
 
-# Change shell
-ZSH=$(which zsh)
-sudo chsh -s $(which zsh) $(whoami) # https://askubuntu.com/a/1325754
+# Change shell if need be
+if [[ ! "$SHELL" == *"zsh"* ]]; then
+    echo "Changing shell to ZSH..."
+    sudo chsh -s $(which zsh) $(whoami) # https://askubuntu.com/a/1325754
+fi
+
+
