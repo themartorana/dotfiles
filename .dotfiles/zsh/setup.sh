@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Install ZSH
 if test ! $(which zsh); then

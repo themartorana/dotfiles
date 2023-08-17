@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Install fzf
 if test ! $(which fzf); then
