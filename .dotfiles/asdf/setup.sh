@@ -11,5 +11,6 @@ then
     echo ". \"\$HOME/.asdf/completions/asdf.bash\"" >> ~/.bashrc
     echo ". \"\$HOME/.asdf/asdf.sh\"" >> ~/.zshrc
     echo ". \"\$HOME/.asdf/completions/asdf.zsh\"" >> ~/.zshrc
+    echo "Echos done"
     source ~/.bashrc
 fi
