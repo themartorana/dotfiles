@@ -10,3 +10,8 @@ then
     echo ". \"\$HOME/.asdf/asdf.sh\"" >> ~/.bashrc
     source ~/.bashrc
 fi
+
+# Install Go plugin
+asdf plugin-add golang
+asdf install golang latest
+asdf global golang latest
