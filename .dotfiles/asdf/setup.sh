@@ -2,12 +2,14 @@
 
 # Check to see if asdf is installed
 if ! command -v asdf &> /dev/null; then
-    # install asdf/nano
-    git config --global advice.detachedHead false
-    git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.12.0
-    chmod u+x ~/.asdf/asdf.sh
-    echo ". \"\$HOME/.asdf/asdf.sh\"" >> ~/.bashrc
-    source ~/.bashrc
+    if [ ! -d '/home/coder/.asdf' ]; then
+        # install asdf/nano
+        git config --global advice.detachedHead false
+        git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.12.0
+        chmod u+x ~/.asdf/asdf.sh
+        echo ". \"\$HOME/.asdf/asdf.sh\"" >> ~/.bashrc
+        source "\$HOME/.asdf/asdf.sh"
+    fi
 fi
 
 # Install Go plugin
