@@ -1,8 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
 echo "Setting up via dotfiles..."
+
+sudo chsh -s "$(which zsh)" "$(whoami)"
+mkdir -p ~/bin
 
 CHECKFILE="$HOME/.dotfiles/initial-setup-done"
 if [ ! -f $CHECKFILE ]; then
@@ -33,10 +36,5 @@ if [ ! -f $CHECKFILE ]; then
     touch $CHECKFILE
 fi
 
-# Change shell if need be
-if [[ ! "$SHELL" == *"zsh"* ]]; then
-    echo "Changing shell to ZSH..."
-    sudo chsh -s $(which zsh) $(whoami) # https://askubuntu.com/a/1325754
-fi
 
 

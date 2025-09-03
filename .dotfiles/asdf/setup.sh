@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Check to see if asdf is installed
 if ! command -v asdf &> /dev/null; then

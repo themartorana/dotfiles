@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 if [ "$(claude config get hasTrustDialogAccepted)" = "false" ]; then
     echo "Setting Claude theme to 'dark'..."
     claude config set -g theme dark
