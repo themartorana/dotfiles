@@ -9,5 +9,6 @@ sudo ln -s "$HOME/.local/bin/claude" "/usr/local/bin/claude"
 printf "\n\nexport ANTHROPIC_AUTH_TOKEN=\"hello-world\"\n" >> $HOME/.zshrc
 
 # Set dark theme
-claude config set -g theme dark
+claude config set theme dark
 claude config set hasTrustDialogAccepted true
+claude config set hasCompletedProjectOnboarding true
