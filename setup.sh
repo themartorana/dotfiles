@@ -29,9 +29,6 @@ if [ ! -f $CHECKFILE ]; then
     # VSCode settings
     source ~/.dotfiles/vscode/setup.sh
 
-    # Install claude
-    source ~/.dotfiles/claude/setup.sh
-
     # Make sure we don't do it again
     touch $CHECKFILE
 fi
