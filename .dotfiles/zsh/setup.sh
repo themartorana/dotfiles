@@ -7,6 +7,10 @@ fi
 
 # loop in zshrc
 echo 'source $HOME/.dotfiles/zsh/zshrc' >> $HOME/.zshrc
+# if [ -f $HOME/.zshrc ]; then
+#     mv $HOME/.zshrc $HOME/.zshrc.bak
+# fi
+# cp $HOME/.dotfiles/zsh/zshrc $HOME/.zshrc
 
 # Set up the .zsh_history file
 touch $HOME/.zsh_history
