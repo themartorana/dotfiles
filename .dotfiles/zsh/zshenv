@@ -19,6 +19,4 @@ PATH=$PATH:$EC2_HOME/bin
 # Export full path
 export PATH
 
-# Go settings
-export GOPROXY="https://proxyclops:JDJhJDE0JG5ubFlQRmtLYlRxUDcxd2N@gmp.devclops.com"
-export GONOSUMDB="github.com/flyclops/*"
+
