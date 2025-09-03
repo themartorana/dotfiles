@@ -6,4 +6,4 @@ sudo -u vscode zsh -c 'claude config set hasTrustDialogAccepted true'
 sudo -u vscode zsh -c 'claude config set hasCompletedProjectOnboarding true'
 
 # Remove self
-sed -i '/claude-runonce.sh/d' /etc/rc.local
+sed -i '/\/root\/claude-runonce.sh >> \/var\/log\/claude-runonce.log 2>&1/d' /etc/rc.local

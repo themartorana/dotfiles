@@ -10,4 +10,4 @@ printf "\n\nexport ANTHROPIC_AUTH_TOKEN=\"hello-world\"\n" >> $HOME/.profile
 
 # Set up claude run-once
 sudo cp $HOME/.dotfiles/claude/claude-runonce.sh /root/claude-runonce.sh
-sudo bash -c 'echo "/root/claude-runonce.sh" >> /etc/rc.local'
+sudo bash -c 'echo "/root/claude-runonce.sh >> /var/log/claude-runonce.log 2>&1" >> /etc/rc.local'
