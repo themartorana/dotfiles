@@ -1,0 +1,13 @@
+
+// See https://aka.ms/devcontainer.json for more information.
+{
+	"name": "Dave's Dotfiles",
+	"build": {
+        "context": ".",
+        "dockerfile": "Dockerfile"
+    },
+    
+	// Features add additional features to your environment. See https://containers.dev/features
+	// Beware: features are not supported on all platforms and may have unintended side-effects.
+	"features": {}
+}
