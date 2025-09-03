@@ -2,9 +2,7 @@
 set -e
 
 # Install ZSH
-if test ! $(which zsh); then
-    sudo apt-get update && sudo apt-get -y install zsh
-fi
+sudo chsh -s "$(which zsh)" "$(whoami)"
 
 # loop in zshrc
 # echo 'source $HOME/.dotfiles/zsh/zshrc' >> $HOME/.zshrc
