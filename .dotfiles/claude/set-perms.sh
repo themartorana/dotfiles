@@ -1,13 +1,11 @@
 #!/bin/bash
+if [ "$(claude config get hasTrustDialogAccepted)" = "false" ]; then
+    echo "Setting Claude theme to 'dark'..."
+    claude config set -g theme dark
 
-# Set dark theme
-sudo -u vscode zsh -c 'claude config set -g theme dark'
-sudo -u vscode zsh -c 'claude config set hasTrustDialogAccepted true'
-sudo -u vscode zsh -c 'claude config set hasCompletedProjectOnboarding true'
+    echo "Setting Claude trust dialog accepted to 'true'..."
+    claude config set hasTrustDialogAccepted true
 
-# Remove self
-# Remove the line from /etc/rc.local
-sudo sed -i '\|/root/claude-runonce.sh >> /var/log/claude-runonce.log 2>&1|d' /etc/rc.local
-
-# Remove this script file
-rm -f "$0"
+    echo "Setting Claude completed project onboarding to 'true'..."
+    claude config set hasCompletedProjectOnboarding true
+fi

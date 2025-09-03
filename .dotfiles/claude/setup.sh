@@ -9,10 +9,5 @@ sudo ln -s "$HOME/.local/bin/claude" "/usr/local/bin/claude"
 printf "\n\nexport ANTHROPIC_AUTH_TOKEN=\"hello-world\"\n" >> $HOME/.profile
 export ANTHROPIC_AUTH_TOKEN="hello-world"
 
-# Set up claude run-once
-echo "Setting theme..."
-claude config set -g theme dark
-echo "Setting trust dialog..."
-claude config set hasTrustDialogAccepted true
-echo "Setting project onboarding..."
-claude config set hasCompletedProjectOnboarding true
+# Check perms
+echo "source \$HOME/.dotfiles/claude/set-perms.sh" >> $HOME/.zshrc
