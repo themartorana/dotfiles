@@ -1,5 +1,3 @@
-export PATH="$HOME/bin:$PATH"
-
 # History
 SAVEHIST=10000
 HISTSIZE=10000
@@ -11,20 +9,20 @@ setopt INC_APPEND_HISTORY
 setopt EXTENDED_HISTORY
 
 # compinit
-# autoload -U compinit
-# setopt EXTENDEDGLOB
-# for dump in $HOME/.zcompdump(#qN.m1); do
-#   compinit
-#   if [[ -s "$dump" && (! -s "$dump.zwc" || "$dump" -nt "$dump.zwc") ]]; then
-#     zcompile "$dump"
-#   fi
-# done
-# unsetopt EXTENDEDGLOB
-# compinit -C
+autoload -U compinit
+setopt EXTENDEDGLOB
+for dump in $HOME/.zcompdump(#qN.m1); do
+  compinit
+  if [[ -s "$dump" && (! -s "$dump.zwc" || "$dump" -nt "$dump.zwc") ]]; then
+    zcompile "$dump"
+  fi
+done
+unsetopt EXTENDEDGLOB
+compinit -C
 
-autoload -Uz compinit bashcompinit
-compinit
-bashcompinit
+# Antidote
+source $HOME/.antidote/antidote.zsh
+antidote load ~/.zsh_plugins.txt
 
 # Completion - tab menu, coloring, fuzzy matching
 zstyle ':completion:*' menu select=2
@@ -34,9 +32,15 @@ zstyle ':completion:*' matcher-list '' \
   'r:[^[:alpha:]]||[[:alpha:]]=** r:|=* m:{a-z\-}={A-Z\_}' \
   'r:|?=** m:{a-z\-}={A-Z\_}'
 
-
-# Antibody
-source $HOME/.dotfiles/antibody/antibody.zsh
-
 # FZF
-source $HOME/.dotfiles/fzf/fzf.zsh
+export FZF_DEFAULT_COMMAND='ag --nocolor -g ""'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_DEFAULT_OPTS='
+  --height=10%
+  --inline-info
+  --header=Find:
+  --color fg:242,bg:236,hl:65,fg+:15,bg+:239,hl+:108
+  --color info:108,prompt:109,spinner:108,pointer:168,marker:168
+'
+source $HOME/.fzf.zsh

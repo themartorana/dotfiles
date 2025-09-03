@@ -1,0 +1,11 @@
+alias cgrep="grep --color=always"
+
+###############################################################################
+# General UI/UX                                                               #
+###############################################################################
+
+alias gp='git push'
+alias gl='git pull'
+alias gco='git checkout'
+alias glc='git rev-parse --verify HEAD'
+alias glcs='git rev-parse --verify --short HEAD'

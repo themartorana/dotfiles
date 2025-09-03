@@ -6,11 +6,14 @@ if test ! $(which zsh); then
 fi
 
 # loop in zshrc
-echo 'source $HOME/.dotfiles/zsh/zshrc' >> $HOME/.zshrc
-# if [ -f $HOME/.zshrc ]; then
-#     mv $HOME/.zshrc $HOME/.zshrc.bak
-# fi
-# cp $HOME/.dotfiles/zsh/zshrc $HOME/.zshrc
+# echo 'source $HOME/.dotfiles/zsh/zshrc' >> $HOME/.zshrc
+if [ -f $HOME/.zshrc ]; then
+    mv $HOME/.zshrc $HOME/.zshrc.bak
+fi
+cp $HOME/.dotfiles/zsh/zshrc $HOME/.zshrc
+cp $HOME/.dotfiles/zsh/aliases $HOME/.aliases
+cp $HOME/.dotfiles/zsh/zshenv $HOME/.zshenv
+cp $HOME/.dotfiles/zsh/zsh_plugins.txt $HOME/.zsh_plugins.txt
 
 # Set up the .zsh_history file
 touch $HOME/.zsh_history

@@ -1,0 +1,13 @@
+# Enables async calls in ZSH. Antidote takes advantage of this
+mafredri/zsh-async
+
+# Basic auto-complete
+zsh-users/zsh-completions
+zsh-users/zsh-autosuggestions
+
+# Pure shell style: https://github.com/sindresorhus/pure
+sindresorhus/pure
+
+# Syntax highlighting and backwards search
+zdharma/fast-syntax-highlighting
+zsh-users/zsh-history-substring-search

@@ -23,6 +23,9 @@ if [ ! -f $CHECKFILE ]; then
     # Install ASDF - not by default
     # source $HOME/.dotfiles/asdf/setup.sh
 
+    # VSCode settings
+    source $HOME/.dotfiles/vscode/setup.sh
+
     # Install claude
     source $HOME/.dotfiles/claude/setup.sh
 
