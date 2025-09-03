@@ -8,9 +8,6 @@ sudo ln -s "$HOME/.local/bin/claude" "/usr/local/bin/claude"
 # See: https://github.com/anthropics/claude-code/issues/1084
 printf "\n\nexport ANTHROPIC_AUTH_TOKEN=\"hello-world\"\n" >> $HOME/.profile
 
-# Set dark theme
-zsh -c 'claude config set -g theme dark'
-zsh -c 'claude config set hasTrustDialogAccepted true'
-zsh -c 'claude config set hasCompletedProjectOnboarding true'
-
-bash -c 'claude config ls'
+# Set up claude run-once
+sudo cp claude-runonce.sh /root/claude-runonce.sh
+sudo echo "/root/claude-runonce.sh" >> /etc/rc.local
