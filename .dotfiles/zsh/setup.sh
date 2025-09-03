@@ -13,7 +13,6 @@ fi
 cp $HOME/.dotfiles/zsh/zshrc $HOME/.zshrc
 cp $HOME/.dotfiles/zsh/aliases $HOME/.aliases
 cp $HOME/.dotfiles/zsh/zshenv $HOME/.zshenv
-cp $HOME/.dotfiles/zsh/zsh_plugins.txt $HOME/.zsh_plugins.txt
 
 # Set up the .zsh_history file
 touch $HOME/.zsh_history

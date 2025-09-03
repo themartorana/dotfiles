@@ -17,8 +17,8 @@ if [ ! -f $CHECKFILE ]; then
     # Run fzf/setup.sh
     source $HOME/.dotfiles/fzf/setup.sh
 
-    # Install antibody
-    source $HOME/.dotfiles/antibody/setup.sh
+    # Install antidote
+    source $HOME/.dotfiles/antidote/setup.sh
 
     # Install ASDF - not by default
     # source $HOME/.dotfiles/asdf/setup.sh
