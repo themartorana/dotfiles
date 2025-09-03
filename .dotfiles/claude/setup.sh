@@ -10,4 +10,4 @@ printf "\nexport ANTHROPIC_AUTH_TOKEN=\"hello-world\" \n" >> $HOME/.profile
 export ANTHROPIC_AUTH_TOKEN="hello-world"
 
 # Check perms
-echo "source \$HOME/.dotfiles/claude/set-perms.sh" >> $HOME/.zshrc
+printf "\nsource \$HOME/.dotfiles/claude/set-perms.sh \n" >> $HOME/.profile
