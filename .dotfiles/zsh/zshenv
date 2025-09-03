@@ -7,6 +7,7 @@
 # All paths we're adding.
 # Each line here appends another path
 LOCALPATH=$LOCALPATH:$HOME/bin
+LOCALPATH=$LOCALPATH:$HOME/.local/bin
 
 # Look locally first
 PATH=$LOCALPATH:$PATH

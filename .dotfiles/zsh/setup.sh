@@ -1,25 +1,37 @@
 #!/usr/bin/env bash
 set -e
 
-# Install ZSH
+# Set as shell
 sudo chsh -s "$(which zsh)" "$(whoami)"
 
-# loop in zshrc
-# echo 'source $HOME/.dotfiles/zsh/zshrc' >> $HOME/.zshrc
-[ -f ~/.zshenv ] && cp ~/.zshenv ~/.zshenv.backup
-cp $HOME/.dotfiles/zsh/zshenv $HOME/.zshenv
+# Install antidote
+git clone --depth=1 https://github.com/mattmc3/antidote.git ${ZDOTDIR:-~}/.antidote
 
-[ -f ~/.zshrc ] && cp ~/.zshrc ~/.zshrc.backup
-cp $HOME/.dotfiles/zsh/zshrc $HOME/.zshrc
+# Install FZF
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install --all
 
-[ -f ~/.aliases ] && cp ~/.aliases ~/.aliases.backup
-cp $HOME/.dotfiles/zsh/aliases $HOME/.aliases
+# copy .zshenv
+[ -f ~/.zshenv ] && cp ~/.zshenv ~/.zshenv.bak
+cp ~/.dotfiles/zsh/zshenv ~/.zshenv
+
+# copy .zshrc
+[ -f ~/.zshrc ] && cp ~/.zshrc ~/.zshrc.bak
+cp ~/.dotfiles/zsh/zshrc ~/.zshrc
+
+# copy .aliases
+[ -f ~/.aliases ] && cp ~/.aliases ~/.aliases.bak
+cp ~/.dotfiles/zsh/aliases ~/.aliases
+
+# copy .zsh_plugins.txt
+[ -f ~/.zsh_plugins.txt ] && cp ~/.zsh_plugins.txt ~/.zsh_plugins.txt.bak
+cp ~/.dotfiles/zsh/zsh_plugins.txt ~/.zsh_plugins.txt
 
 # Set up the .zsh_history file
-[ -f ~/.zsh_history ] || touch $HOME/.zsh_history
+[ -f ~/.zsh_history ] || touch ~/.zsh_history
 
 # Add local user completions to .zshrc
-if ! grep -q "fpath+=\$HOME/.zsh/completions" ~/.zshrc; then
+if ! grep -q "fpath+=\~/.zsh/completions" ~/.zshrc; then
     sed -i '1s/^/typeset -gaU fpath=($fpath ~\/.zsh\/completions)\n\n/' ~/.zshrc
-    echo "Added '$HOME/.zsh/completions' to .zshrc"
+    echo "Added '~/.zsh/completions' to .zshrc"
 fi
