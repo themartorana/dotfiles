@@ -2,7 +2,7 @@
 
 # Install claude
 curl -fsSL https://claude.ai/install.sh | bash
-ln -s "$HOME/.local/bin/claude" "/usr/local/bin/claude"
+sudo ln -s "$HOME/.local/bin/claude" "/usr/local/bin/claude"
 
 # Necessary, frustratingly 
 # See: https://github.com/anthropics/claude-code/issues/1084
