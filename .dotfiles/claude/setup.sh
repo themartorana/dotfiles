@@ -9,5 +9,5 @@ sudo ln -s "$HOME/.local/bin/claude" "/usr/local/bin/claude"
 printf "\n\nexport ANTHROPIC_AUTH_TOKEN=\"hello-world\"\n" >> $HOME/.profile
 
 # Set up claude run-once
-sudo chmod +x $HOME/.dotfiels/claude/set-perms.sh
+sudo chmod +x $HOME/.dotfiles/claude/set-perms.sh
 sudo su -c "$HOME/.dotfiles/claude/set-perms.sh" root
