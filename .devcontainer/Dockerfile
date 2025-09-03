@@ -1,4 +1,5 @@
-FROM mcr.microsoft.com/devcontainers/base:ubuntu
+# FROM mcr.microsoft.com/devcontainers/base:ubuntu
+FROM mcr.microsoft.com/devcontainers/base:alpine
 
 # use this Dockerfile to install additional tools you might need, e.g.
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
