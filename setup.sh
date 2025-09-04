@@ -4,8 +4,11 @@ set -e
 
 echo "Setting up via dotfiles..."
 
+# Source utilities for conditional sudo
+source .dotfiles/utilities.sh
+
 # set local shell to zsh
-sudo chsh -s "$(which zsh)" "$(whoami)"
+maybe_sudo chsh -s "$(which zsh)" "$(whoami)"
 
 # make local bin folder
 mkdir -p ~/bin
