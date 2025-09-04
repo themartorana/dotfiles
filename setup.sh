@@ -33,7 +33,9 @@ if [ ! -f $CHECKFILE ]; then
     source ~/.dotfiles/claude/setup.sh
 
     # Make sure we don't do it again
-    touch $CHECKFILE
+    cmd="touch ${CHECKFILE}"
+    echo $cmd
+    bash -c "${cmd}"
 fi
 
 
