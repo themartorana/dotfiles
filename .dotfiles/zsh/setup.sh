@@ -8,11 +8,12 @@ source ~/.dotfiles/utilities.sh
 maybe_sudo chsh -s "$(which zsh)" "$(whoami)"
 
 # Install antidote
-git clone --depth=1 https://github.com/mattmc3/antidote.git ${ZDOTDIR:-~}/.antidote
-
-# Install FZF
-git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install --all
+if [ ! -d "${ZDOTDIR:-~}/.antidote" ]; then
+    git clone --depth=1 https://github.com/mattmc3/antidote.git ${ZDOTDIR:-~}/.antidote || {
+        echo "Error: Failed to clone antidote repository"
+        exit 1
+    }
+fi
 
 # copy .zshenv
 [ -f ~/.zshenv ] && cp ~/.zshenv ~/.zshenv.bak
@@ -21,10 +22,6 @@ cp ~/.dotfiles/zsh/zshenv ~/.zshenv
 # copy .zshrc
 [ -f ~/.zshrc ] && cp ~/.zshrc ~/.zshrc.bak
 cp ~/.dotfiles/zsh/zshrc ~/.zshrc
-
-# copy .aliases
-[ -f ~/.aliases ] && cp ~/.aliases ~/.aliases.bak
-cp ~/.dotfiles/zsh/aliases ~/.aliases
 
 # copy .zsh_plugins.txt
 [ -f ~/.zsh_plugins.txt ] && cp ~/.zsh_plugins.txt ~/.zsh_plugins.txt.bak

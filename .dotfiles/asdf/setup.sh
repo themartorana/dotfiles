@@ -2,10 +2,13 @@
 
 # Check to see if asdf is installed
 if ! command -v asdf &> /dev/null; then
-    if [ ! -d '/home/coder/.asdf' ]; then
+    if [ ! -d "$HOME/.asdf" ]; then
         # install asdf/nano
         git config --global advice.detachedHead false
-        git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.12.0
+        git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.12.0 || {
+            echo "Error: Failed to clone asdf repository"
+            exit 1
+        }
         chmod u+x ~/.asdf/asdf.sh
         echo ". \"\$HOME/.asdf/asdf.sh\"" >> ~/.bashrc
         source "\$HOME/.asdf/asdf.sh"
