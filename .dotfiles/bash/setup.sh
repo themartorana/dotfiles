@@ -5,7 +5,7 @@ set -e
 source ~/.dotfiles/utilities.sh
 
 # Set as shell
-maybe_sudo chsh -s "$(which bash)" "$(whoami)"
+change_shell "$(which bash)"
 
 # copy .bash_profile
 [ -f ~/.bash_profile ] && cp ~/.bash_profile ~/.bash_profile.bak
