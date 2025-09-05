@@ -13,9 +13,6 @@ if [ ! -f "$CHECKFILE" ]; then
     mkdir -p ~/.local/bin
     cp -rv .dotfiles ~
 
-    # Source utilities for conditional sudo
-    source ~/.dotfiles/utilities.sh
-
     # If zsh exists on the system, call zsh/setup.sh
     # else call bash/setup.sh
     if command -v zsh &> /dev/null; then

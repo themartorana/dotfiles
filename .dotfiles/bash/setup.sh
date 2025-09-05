@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-# Source utilities for conditional sudo
-source ~/.dotfiles/utilities.sh
-
 # copy .bash_profile
 [ -f ~/.bash_profile ] && cp ~/.bash_profile ~/.bash_profile.bak
 cp ~/.dotfiles/bash/bash_profile ~/.bash_profile
