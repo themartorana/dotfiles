@@ -16,3 +16,7 @@ cp ~/.dotfiles/aliases ~/.aliases
 # Set up the .bash_history file
 [ -f ~/.bash_history ] || touch ~/.bash_history
 
+# Add aliases sourcing to .profile
+if ! grep -q "source \$HOME/.aliases" ~/.profile 2>/dev/null; then
+    echo "[ -f \$HOME/.aliases ] && source \$HOME/.aliases" >> ~/.profile
+fi
