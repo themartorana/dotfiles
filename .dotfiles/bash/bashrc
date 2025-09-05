@@ -21,7 +21,7 @@ export FZF_DEFAULT_OPTS='
 '
 
 # Starship
-eval "$(starship init zsh)"
+eval "$(starship init bash)"
 
 # Completion - tab menu, coloring, fuzzy matching
 source $HOME/.fzf.zsh
