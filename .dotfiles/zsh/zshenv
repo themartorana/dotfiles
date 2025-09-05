@@ -1,22 +1,2 @@
 # Load the default .profile
-[[ -s "$HOME/.profile" ]] && source "$HOME/.profile"
-
-# Source aliases if the file exists
-[ -f $HOME/.aliases ] && source $HOME/.aliases
-
-# All paths we're adding.
-# Each line here appends another path
-LOCALPATH=$LOCALPATH:$HOME/bin
-LOCALPATH=$LOCALPATH:$HOME/.local/bin
-
-# Look locally first
-PATH=$LOCALPATH:$PATH
-
-# Setup Amazon EC2 Command-Line Tools
-export EC2_HOME=$HOME/.ec2
-PATH=$PATH:$EC2_HOME/bin
-
-# Export full path
-export PATH
-
-
+[[ -s "$HOME/.zshrc" ]] && source "$HOME/.zshrc"

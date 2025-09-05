@@ -1,5 +1,1 @@
-# Load the default .profile
-[[ -s "$HOME/.profile" ]] && source "$HOME/.profile"
-
-# Bashrc
 [[ -f "$HOME/.bashrc" ]] && source "$HOME/.bashrc"

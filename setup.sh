@@ -13,6 +13,10 @@ if [ ! -f "$CHECKFILE" ]; then
     mkdir -p ~/.local/bin
     cp -rv .dotfiles ~
 
+    # Move profile 
+    [[ -s "$HOME/.profile" ]] && mv "$HOME/.profile" "$HOME/.profile.bak"
+    cp "$HOME/.dotfiles/profile" "$HOME/.profile"
+
     # Use your $SHELL to determine which setup script to run,
     # and if it's neither bash or zsh, default to bash and 
     # inform the user.

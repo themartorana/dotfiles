@@ -1,3 +1,5 @@
+[[ -s "$HOME/.profile" ]] && source "$HOME/.profile"
+
 # History
 SAVEHIST=10000
 HISTSIZE=10000
