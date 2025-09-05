@@ -24,6 +24,9 @@ compinit -C
 source $HOME/.antidote/antidote.zsh
 antidote load ~/.zsh_plugins.txt
 
+# Starship
+eval "$(starship init zsh)"
+
 # Completion - tab menu, coloring, fuzzy matching
 zstyle ':completion:*' menu select=2
 zstyle ':completion:*' list-colors 'exfxcxdxbxegedabagacad'

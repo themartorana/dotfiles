@@ -5,9 +5,6 @@ mafredri/zsh-async
 zsh-users/zsh-completions
 zsh-users/zsh-autosuggestions
 
-# Pure shell style: https://github.com/sindresorhus/pure
-sindresorhus/pure
-
 # Syntax highlighting and backwards search
 zdharma/fast-syntax-highlighting
 zsh-users/zsh-history-substring-search
