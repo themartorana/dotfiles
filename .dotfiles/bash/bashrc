@@ -2,11 +2,6 @@
 SAVEHIST=10000
 HISTSIZE=10000
 HISTFILE=~/.bash_history
-setopt HIST_IGNORE_DUPS
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_FIND_NO_DUPS
-setopt INC_APPEND_HISTORY
-setopt EXTENDED_HISTORY
 
 # FZF
 export FZF_DEFAULT_COMMAND='ag --nocolor -g ""'
@@ -24,4 +19,4 @@ export FZF_DEFAULT_OPTS='
 eval "$(starship init bash)"
 
 # Completion - tab menu, coloring, fuzzy matching
-source $HOME/.fzf.zsh
+source $HOME/.fzf.bash
