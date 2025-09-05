@@ -13,8 +13,9 @@ if [ ! -f "$CHECKFILE" ]; then
     mkdir -p ~/.local/bin
     cp -rv .dotfiles ~
 
-    # If zsh exists on the system, call zsh/setup.sh
-    # else call bash/setup.sh
+    # Use your $SHELL to determine which setup script to run,
+    # and if it's neither bash or zsh, default to bash and 
+    # inform the user.
     if [[ "$SHELL" == *"zsh" ]]; then
         echo "Zsh shell detected, using Zsh"
         source ~/.dotfiles/zsh/setup.sh
