@@ -4,9 +4,6 @@ set -e
 # Source utilities for conditional sudo
 source ~/.dotfiles/utilities.sh
 
-# Set as shell
-change_shell "$(which bash)" "$(whoami)"
-
 # copy .bash_profile
 [ -f ~/.bash_profile ] && cp ~/.bash_profile ~/.bash_profile.bak
 cp ~/.dotfiles/bash/bash_profile ~/.bash_profile

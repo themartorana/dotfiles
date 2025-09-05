@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-# Source utilities for conditional sudo
-source ~/.dotfiles/utilities.sh
-
-# Set as shell
-maybe_sudo chsh -s "$(which zsh)" "$(whoami)"
-
 # Install antidote
 if [ ! -d "${ZDOTDIR:-~}/.antidote" ]; then
     git clone --depth=1 https://github.com/mattmc3/antidote.git ${ZDOTDIR:-~}/.antidote || {
