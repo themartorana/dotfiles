@@ -19,5 +19,5 @@ change_shell() {
         awk '/^auth(.*)pam_rootok\.so$/ { $2 = "sufficient" } { print }' /etc/pam.d/chsh > /tmp/chsh.tmp && mv /tmp/chsh.tmp /etc/pam.d/chsh
     fi
 
-    maybe_sudo chsh -s "$1" "$USER"
+    maybe_sudo chsh -s "$1" "$2"
 }
