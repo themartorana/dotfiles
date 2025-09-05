@@ -4,6 +4,9 @@
 # Source aliases if the file exists
 [ -f $HOME/.aliases ] && source $HOME/.aliases
 
+# Try
+export DAVE="WORLD"
+
 # All paths we're adding.
 # Each line here appends another path
 LOCALPATH=$LOCALPATH:$HOME/bin
