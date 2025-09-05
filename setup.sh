@@ -15,11 +15,14 @@ if [ ! -f "$CHECKFILE" ]; then
 
     # If zsh exists on the system, call zsh/setup.sh
     # else call bash/setup.sh
-    if command -v zsh &> /dev/null; then
-        echo "Zsh found, using Zsh"
+    if [[ "$SHELL" == *"zsh" ]]; then
+        echo "Zsh shell detected, using Zsh"
         source ~/.dotfiles/zsh/setup.sh
+    elif [[ "$SHELL" == *"bash" ]]; then
+        echo "Bash shell detected, using Bash"
+        source ~/.dotfiles/bash/setup.sh
     else
-        echo "Zsh not found, using Bash"
+        echo "Unknown shell: $SHELL, defaulting to Bash"
         source ~/.dotfiles/bash/setup.sh
     fi
 
