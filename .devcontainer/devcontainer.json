@@ -6,6 +6,10 @@
         "dockerfile": "Dockerfile"
     },
     
+	"containerEnv": {
+		"ANTHROPIC_AUTH_TOKEN": "${localEnv:ANTHROPIC_AUTH_TOKEN}"
+	},
+
 	// Features add additional features to your environment. See https://containers.dev/features
 	// Beware: features are not supported on all platforms and may have unintended side-effects.
 	"features": {}

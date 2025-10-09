@@ -11,7 +11,7 @@ if [ ! -f "$CHECKFILE" ]; then
     mkdir -p ~/code
     mkdir -p ~/.config
     mkdir -p ~/.local/bin
-    cp -rv .dotfiles ~
+    cp -rv dotfiles ~/.dotfiles
 
     # Move profile 
     [[ -s "$HOME/.profile" ]] && mv "$HOME/.profile" "$HOME/.profile.bak"
@@ -20,16 +20,11 @@ if [ ! -f "$CHECKFILE" ]; then
     # Use your $SHELL to determine which setup script to run,
     # and if it's neither bash or zsh, default to bash and 
     # inform the user.
-    if [[ "$SHELL" == *"zsh" ]]; then
-        echo "Zsh shell detected, using Zsh"
-        source ~/.dotfiles/zsh/setup.sh
-    elif [[ "$SHELL" == *"bash" ]]; then
-        echo "Bash shell detected, using Bash"
-        source ~/.dotfiles/bash/setup.sh
-    else
-        echo "Unknown shell: $SHELL, defaulting to Bash"
-        source ~/.dotfiles/bash/setup.sh
-    fi
+    echo "Setting up zsh..."
+    source ~/.dotfiles/zsh/setup.sh
+
+    echo "Setting up bash..."
+    source ~/.dotfiles/bash/setup.sh
 
     # Setup Starship.rs
     source ~/.dotfiles/starship/setup.sh

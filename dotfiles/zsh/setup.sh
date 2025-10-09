@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
+# Set ZDOTDIR to the home directory if not already set
+export ZDOTDIR="${ZDOTDIR:-$HOME}"
+
 # Install antidote
 if [ ! -d "${ZDOTDIR:-~}/.antidote" ]; then
     git clone --depth=1 https://github.com/mattmc3/antidote.git ${ZDOTDIR:-~}/.antidote || {
