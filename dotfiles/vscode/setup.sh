@@ -37,4 +37,4 @@ set -e
 # ${codebin} --install-extension onatm.open-in-new-window
 # ${codebin} --install-extension redhat.vscode-yaml
 
-cp .vscode-extensions-installer ~/.vscode-extensions-installer
+cp ~/.dotfiles/vscode/.vscode-extensions-installer ~/.vscode-extensions-installer
