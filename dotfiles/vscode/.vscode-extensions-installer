@@ -20,6 +20,8 @@ function install_extensions() {
         ${codebin} --install-extension vivaxy.vscode-conventional-commits
         ${codebin} --install-extension onatm.open-in-new-window
         ${codebin} --install-extension redhat.vscode-yaml
-        touch ~/.vscode-extensions-installed
+        if [ $? -eq 0 ]; then
+            touch ~/.vscode-extensions-installed
+        fi
     fi
 }
