@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+function install_extensions() {
+    local INSTALLED_CHECK_FILE=~/.vscode-extensions-installed
+
+    if [ -f "${INSTALLED_CHECK_FILE}" ]; then
+        return
+    fi
+
+    # Find vscode
+    local codebin=$(which code || which code-insiders)
+    if [ -z "${codebin}" ]; then
+        echo "VSCode not found."
+        return
+    fi
+
+    # Check to see if letmaik.git-tree-compare is already installed
+    if ! ${codebin} --list-extensions | grep -q letmaik.git-tree-compare; then
+        ${codebin} --install-extension letmaik.git-tree-compare
+        ${codebin} --install-extension anthropic.claude-code
+        ${codebin} --install-extension vivaxy.vscode-conventional-commits
+        ${codebin} --install-extension onatm.open-in-new-window
+        ${codebin} --install-extension redhat.vscode-yaml
+        touch ~/.vscode-extensions-installed
+    fi
+}
