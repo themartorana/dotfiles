@@ -49,3 +49,5 @@ export FZF_DEFAULT_OPTS='
   --color info:108,prompt:109,spinner:108,pointer:168,marker:168
 '
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+[ -f ~/.vscode-extensions-installer ] && source ~/.vscode-extensions-installer && install_extensions
