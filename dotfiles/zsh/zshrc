@@ -50,4 +50,5 @@ export FZF_DEFAULT_OPTS='
 '
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+# VSCode Extensions installer
 [ -f ~/.vscode-extensions-installer ] && source ~/.vscode-extensions-installer && install_extensions
