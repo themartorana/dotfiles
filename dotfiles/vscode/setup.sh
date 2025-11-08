@@ -29,9 +29,10 @@ set -e
 # apply_setting "terminal.integrated.defaultProfile.linux" "zsh"
 
 # Install extensions
-code --install-extension letmaik.git-tree-compare
-code --install-extension anthropic.claude-code
-code --install-extension vivaxy.vscode-conventional-commits
-code --install-extension onatm.open-in-new-window
-code --install-extension redhat.vscode-yaml
+codebin=$(which code || which code-insiders)
+$codebin --install-extension letmaik.git-tree-compare
+$codebin --install-extension anthropic.claude-code
+$codebin --install-extension vivaxy.vscode-conventional-commits
+$codebin --install-extension onatm.open-in-new-window
+$codebin --install-extension redhat.vscode-yaml
 
