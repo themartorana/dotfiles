@@ -1,0 +1,5 @@
+# Put anything here you would want in a .aliases file, 
+# but that you don't want to be tracked in git. This is for 
+# personal aliases that you don't want to share, or that are 
+# specific to your machine. This file will be sourced by both 
+# bash and zsh, so you can put aliases for either shell here.

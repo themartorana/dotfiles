@@ -12,23 +12,25 @@ if [ ! -d "${ZDOTDIR:-~}/.antidote" ]; then
     }
 fi
 
-# copy .zshenv
-[ -f ~/.zshenv ] && cp ~/.zshenv ~/.zshenv.bak
-cp ~/.dotfiles/zsh/zshenv ~/.zshenv
+# .zshenv
+[ -f ~/.zshenv ] && mv ~/.zshenv ~/.zshenv.bak
+ln -s ~/.dotfiles/dotfiles/zsh/zshenv ~/.zshenv
+[ ! -f ~/.zshenv.local ] && cp ~/.dotfiles/zsh/zshenv.local ~/.zshenv.local
 
-# copy .zshrc
-[ -f ~/.zshrc ] && cp ~/.zshrc ~/.zshrc.bak
-cp ~/.dotfiles/zsh/zshrc ~/.zshrc
+# .zshrc
+[ -f ~/.zshrc ] && mv ~/.zshrc ~/.zshrc.bak
+ln -s ~/.dotfiles/dotfiles/zsh/zshrc ~/.zshrc
+[ ! -f ~/.zshrc.local ] && cp ~/.dotfiles/zsh/zshrc.local ~/.zshrc.local
 
-# copy .zsh_plugins.txt
-[ -f ~/.zsh_plugins.txt ] && cp ~/.zsh_plugins.txt ~/.zsh_plugins.txt.bak
-cp ~/.dotfiles/zsh/zsh_plugins.txt ~/.zsh_plugins.txt
+# .zsh_plugins.txt
+[ -f ~/.zsh_plugins.txt ] && mv ~/.zsh_plugins.txt ~/.zsh_plugins.txt.bak
+ln -s ~/.dotfiles/dotfiles/zsh/zsh_plugins.txt ~/.zsh_plugins.txt
 
-# Set up the .zsh_history file
+# .zsh_history
 [ -f ~/.zsh_history ] || touch ~/.zsh_history
 
-# Add local user completions to .zshrc
+# Add local user completions to .zshrc.local
 if ! grep -q "fpath+=\~/.zsh/completions" ~/.zshrc; then
-    sed -i '1s/^/typeset -gaU fpath=($fpath ~\/.zsh\/completions)\n\n/' ~/.zshrc
-    echo "Added '~/.zsh/completions' to .zshrc"
+    sed -i '1s/^/typeset -gaU fpath=($fpath ~\/.zsh\/completions)\n\n/' ~/.zshrc.local
+    echo "Added '~/.zsh/completions' to .zshrc.local"
 fi

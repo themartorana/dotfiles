@@ -50,5 +50,8 @@ export FZF_DEFAULT_OPTS='
 '
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+# Load local .zshrc.local if it exists
+[[ -s "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
+
 # VSCode Extensions installer
 [ -f ~/.vscode-extensions-installer ] && source ~/.vscode-extensions-installer && install_extensions
