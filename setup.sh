@@ -7,6 +7,7 @@ echo "Running fix/local setup script..."
 git config --global remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
 git fetch
 git checkout fix/local
+git config --global --unset remote.origin.fetch
 ./setup.sh
 echo "Finished fix/local setup script."
 exit 0
