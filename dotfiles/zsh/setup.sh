@@ -15,12 +15,12 @@ fi
 # .zshenv
 [ -f ~/.zshenv ] && mv ~/.zshenv ~/.zshenv.bak
 ln -s ~/.dotfiles/dotfiles/zsh/zshenv ~/.zshenv
-[ ! -f ~/.zshenv.local ] && cp ~/.dotfiles/zsh/zshenv.local ~/.zshenv.local
+[ ! -f ~/.zshenv.local ] && cp ~/.dotfiles/dotfiles/zsh/zshenv.local ~/.zshenv.local
 
 # .zshrc
 [ -f ~/.zshrc ] && mv ~/.zshrc ~/.zshrc.bak
 ln -s ~/.dotfiles/dotfiles/zsh/zshrc ~/.zshrc
-[ ! -f ~/.zshrc.local ] && cp ~/.dotfiles/zsh/zshrc.local ~/.zshrc.local
+[ ! -f ~/.zshrc.local ] && cp ~/.dotfiles/dotfiles/zsh/zshrc.local ~/.zshrc.local
 
 # .zsh_plugins.txt
 [ -f ~/.zsh_plugins.txt ] && mv ~/.zsh_plugins.txt ~/.zsh_plugins.txt.bak
