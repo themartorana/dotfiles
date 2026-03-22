@@ -1,8 +1,8 @@
-# CLAUDE.md - Flyclops Code Guidelines
+# CLAUDE.md - Code Guidelines
 
 ## Overview
 
-This document contains rules and guidelines that should be applied to all code touched by Claude on behalf of Flyclops.
+This document contains rules and guidelines that should be applied to all code touched by Claude.
 
 ---
 
@@ -42,15 +42,13 @@ Suggest measurable improvements with benchmarks.
 
 2. **Always propagate errors**: Any function that can receive an error from another function, or generates its own errors, must return those errors to the caller. Never swallow errors silently unless explicitly specified otherwise.
 
-3. **Log errors at creation**: Any function that creates an `errorclops.Error` is responsible for logging that error at the point of creation.
+3. **Log errors at creation**: Any function that creates an error of any kind is responsible for logging that error at the point of creation.
 
-4. **Wrap generic errors**: Any function that receives a generic error should wrap it in an `errorclops.Error` and log it.
-
-5. **Error type by project**: If the project imports `com-flyclops-common` at the `go.mod` level, use `errorclops.Error` objects unless otherwise specified. If `com-flyclops-common` is not imported, the same error handling rules apply but using standard `Error` objects instead.
+4. **Wrap generic errors**: Any function that receives a generic error should wrap it and log it.
 
 ---
 
-## Code Style
+## Go Code Style
 
 1. **Error fall-through pattern**: When multiple operations return errors in sequence and each subsequent operation should only run if the previous succeeded, use the `if err == nil` fall-through pattern instead of repeated `if err != nil { return err }` blocks. This reduces nesting and makes the success path clearer.
 
@@ -103,14 +101,6 @@ Suggest measurable improvements with benchmarks.
    ```bash
    golines --base-formatter="gofmt" -m 80 -w {file}
    ```
-
----
-
-## Data
-
-1. **Transaction lifecycle**: Each `contextclops.Context` object has a single transaction per database. Any save operation on any model must either commit or roll back the transaction.
-
-2. **Copy context for goroutines**: When passing work into a goroutine, copy the context in the caller to give the goroutine its own transaction set. Example: `go someFunction(ctx.Copy())`
 
 -- 
 
