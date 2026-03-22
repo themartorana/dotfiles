@@ -1,0 +1,3 @@
+# Put anything here you would want in a .bash_profile file,
+# but don't want to be tracked by git. This is useful for
+# things like local environment variables, PATH modifications, etc.
