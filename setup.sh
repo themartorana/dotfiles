@@ -27,6 +27,11 @@ if [ ! -f "$CHECKFILE" ]; then
     ln -s "$HOME/.dotfiles/dotfiles/localfiles/profile" "$HOME/.profile"
     [ ! -f ~/.profile.local ] && cp ~/.dotfiles/dotfiles/localfiles/profile.local ~/.profile.local
 
+    # copy .aliases
+    [ -f ~/.aliases ] && mv ~/.aliases ~/.aliases.bak
+    ln -s ~/.dotfiles/dotfiles/localfiles/aliases ~/.aliases
+    [ ! -f ~/.aliases.local ] && cp ~/.dotfiles/dotfiles/localfiles/aliases.local ~/.aliases.local
+
     # Use your $SHELL to determine which setup script to run,
     # and if it's neither bash or zsh, default to bash and 
     # inform the user.
@@ -38,11 +43,6 @@ if [ ! -f "$CHECKFILE" ]; then
 
     # Setup Starship.rs
     source ~/.dotfiles/dotfiles/starship/setup.sh
-
-    # copy .aliases
-    [ -f ~/.aliases ] && mv ~/.aliases ~/.aliases.bak
-    ln -s ~/.dotfiles/dotfiles/localfiles/aliases ~/.aliases
-    [ ! -f ~/.aliases.local ] && cp ~/.dotfiles/dotfiles/localfiles/aliases.local ~/.aliases.local
 
     # Install ASDF - not by default
     # source ~/.dotfiles/dotfiles/asdf/setup.sh 
