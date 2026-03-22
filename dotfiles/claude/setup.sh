@@ -20,7 +20,7 @@ else
 fi
 
 # if ~/.claude/CLAUDE.md doesn't exist, create a symlink to the one in this repo
-if [[ ! -e ~/.claude/CLAUDE.md ]]; then
+if [[ ! -f ~/.claude/CLAUDE.md ]]; then
     mkdir -p ~/.claude
     ln -s ~/.dotfiles/dotfiles/claude/CLAUDE.md ~/.claude/CLAUDE.md
 fi
