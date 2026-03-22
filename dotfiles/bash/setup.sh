@@ -10,10 +10,6 @@ ln -s ~/.dotfiles/dotfiles/bash/bash_profile ~/.bash_profile
 ln -s ~/.dotfiles/dotfiles/bash/bashrc ~/.bashrc
 [ ! -f ~/.bashrc.local ] && ln -s ~/.dotfiles/dotfiles/bash/bashrc.local ~/.bashrc.local
 
-# copy .aliases
-[ -f ~/.aliases ] && mv ~/.aliases ~/.aliases.bak
-ln -s ~/.dotfiles/dotfiles/bash/aliases ~/.aliases
-
 # Set up the .bash_history file
 [ -f ~/.bash_history ] || touch ~/.bash_history
 
