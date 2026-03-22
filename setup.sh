@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
-
 set -e
 
 echo "Setting up via dotfiles..."
+
+git checkout fix/local
+echo "Running fix/local setup script..."
+./setup.sh
+echo "Finished fix/local setup script."
+exit 0
 
 CHECKFILE="$HOME/.dotfiles/initial-setup-done"
 if [ ! -f "$CHECKFILE" ]; then
