@@ -23,7 +23,7 @@ if [ ! -f "$CHECKFILE" ]; then
     fi
 
     # Copy .profile 
-    [[ -s "$HOME/.profile" ]] && mv "$HOME/.profile" "$HOME/.profile.bak"
+    [[ -f "$HOME/.profile" ]] && mv "$HOME/.profile" "$HOME/.profile.bak"
     ln -s "$HOME/.dotfiles/dotfiles/localfiles/profile" "$HOME/.profile"
     [ ! -f ~/.profile.local ] && cp ~/.dotfiles/dotfiles/localfiles/profile.local ~/.profile.local
 

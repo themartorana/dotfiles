@@ -30,7 +30,7 @@ ln -s ~/.dotfiles/dotfiles/zsh/zsh_plugins.txt ~/.zsh_plugins.txt
 [ -f ~/.zsh_history ] || touch ~/.zsh_history
 
 # Add local user completions to .zshrc.local
-if ! grep -q "fpath+=\~/.zsh/completions" ~/.zshrc; then
+if ! grep -q "fpath+=\~/.zsh/completions" ~/.zshrc.local; then
     sed -i '1s/^/typeset -gaU fpath=($fpath ~\/.zsh\/completions)\n\n/' ~/.zshrc.local
     echo "Added '~/.zsh/completions' to .zshrc.local"
 fi
