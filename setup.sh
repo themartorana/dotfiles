@@ -4,7 +4,7 @@ set -e
 
 echo "Setting up via dotfiles..."
 
-source "$HOME/.dotfiles/dotfiles/utilities.sh"
+source "./dotfiles/utilities.sh"
 
 CHECKFILE="$HOME/.dotfiles/initial-setup-done"
 if [ ! -f "$CHECKFILE" ]; then
