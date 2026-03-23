@@ -42,4 +42,4 @@ set -e
 #     ln -s ~/.dotfiles/dotfiles/vscode/.vscode-extensions-installer ~/.vscode-extensions-installer
 # fi
 
-source .vscode-extensions-installer && install_extensions
+source $HOME/.dotfiles/dotfiles/vscode/.vscode-extensions-installer && install_extensions
