@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+source "$HOME/.dotfiles/dotfiles/utilities.sh"
+
 # copy .bash_profile
 backup_or_rm_symlink "$HOME/.bash_profile"
 ln -s ~/.dotfiles/dotfiles/bash/bash_profile ~/.bash_profile

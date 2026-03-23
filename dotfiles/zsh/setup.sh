@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+source "$HOME/.dotfiles/dotfiles/utilities.sh"
+
 # Set ZDOTDIR to the home directory if not already set
 export ZDOTDIR="${ZDOTDIR:-$HOME}"
 

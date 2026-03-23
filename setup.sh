@@ -4,6 +4,8 @@ set -e
 
 echo "Setting up via dotfiles..."
 
+source "$HOME/.dotfiles/dotfiles/utilities.sh"
+
 CHECKFILE="$HOME/.dotfiles/initial-setup-done"
 if [ ! -f "$CHECKFILE" ]; then
     # Make directories
@@ -23,12 +25,12 @@ if [ ! -f "$CHECKFILE" ]; then
     fi
 
     # Copy .profile 
-    [[ -f "$HOME/.profile" ]] && mv "$HOME/.profile" "$HOME/.profile.bak"
+    backup_or_rm_symlink "$HOME/.profile"
     ln -s "$HOME/.dotfiles/dotfiles/localfiles/profile" "$HOME/.profile"
     [ ! -f ~/.profile.local ] && cp ~/.dotfiles/dotfiles/localfiles/profile.local ~/.profile.local
 
     # copy .aliases
-    [ -f ~/.aliases ] && mv ~/.aliases ~/.aliases.bak
+    backup_or_rm_symlink "$HOME/.aliases"
     ln -s ~/.dotfiles/dotfiles/localfiles/aliases ~/.aliases
     [ ! -f ~/.aliases.local ] && cp ~/.dotfiles/dotfiles/localfiles/aliases.local ~/.aliases.local
 
