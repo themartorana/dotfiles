@@ -2,12 +2,12 @@
 set -e
 
 # copy .bash_profile
-[ -f ~/.bash_profile ] && mv ~/.bash_profile ~/.bash_profile.bak
+backup_or_rm_symlink "$HOME/.bash_profile"
 ln -s ~/.dotfiles/dotfiles/bash/bash_profile ~/.bash_profile
 [ ! -f ~/.bash_profile.local ] && cp ~/.dotfiles/dotfiles/bash/bash_profile.local ~/.bash_profile.local
 
 # copy .bashrc
-[ -f ~/.bashrc ] && mv ~/.bashrc ~/.bashrc.bak
+backup_or_rm_symlink "$HOME/.bashrc"
 ln -s ~/.dotfiles/dotfiles/bash/bashrc ~/.bashrc
 [ ! -f ~/.bashrc.local ] && cp ~/.dotfiles/dotfiles/bash/bashrc.local ~/.bashrc.local
 

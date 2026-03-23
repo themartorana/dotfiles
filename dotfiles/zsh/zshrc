@@ -10,6 +10,10 @@ setopt HIST_FIND_NO_DUPS
 setopt INC_APPEND_HISTORY
 setopt EXTENDED_HISTORY
 
+# fpath for local completions and Homebrew
+fpath=($fpath ~/.zsh/completions)
+fpath=($fpath /opt/homebrew/share/zsh/site-functions)
+
 # compinit
 autoload -U compinit
 setopt EXTENDEDGLOB
