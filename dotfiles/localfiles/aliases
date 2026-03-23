@@ -11,4 +11,7 @@ alias glc='git rev-parse --verify HEAD'
 alias glcs='git rev-parse --verify --short HEAD'
 alias gm='git merge'
 
+alias ls='ls --color=auto'
+alias rm='rm -i'
+
 [ -f $HOME/.aliases.local ] && source $HOME/.aliases.local
