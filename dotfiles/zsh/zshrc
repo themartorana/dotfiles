@@ -10,6 +10,10 @@ setopt HIST_FIND_NO_DUPS
 setopt INC_APPEND_HISTORY
 setopt EXTENDED_HISTORY
 
+# fpath for local completions and Homebrew
+fpath=($fpath ~/.zsh/completions)
+fpath=($fpath /opt/homebrew/share/zsh/site-functions)
+
 # compinit
 autoload -U compinit
 setopt EXTENDEDGLOB
@@ -49,6 +53,9 @@ export FZF_DEFAULT_OPTS='
   --color info:108,prompt:109,spinner:108,pointer:168,marker:168
 '
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Load local .zshrc.local if it exists
+[[ -s "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
 
 # VSCode Extensions installer
 [ -f ~/.vscode-extensions-installer ] && source ~/.vscode-extensions-installer && install_extensions

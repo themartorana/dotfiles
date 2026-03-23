@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-echo "Installing Claude Code..."
+# check to see if already installed
+if command -v claude >/dev/null 2>&1; then
+    echo "Claude Code is already installed, skipping installation."
+    exit 0
+fi
 
 # Prefer native installer for better performance and no dependencies
 if [[ "$OSTYPE" == "darwin"* ]] || [[ "$OSTYPE" == "linux-gnu"* ]] || [[ -n "$WSL_DISTRO_NAME" ]]; then
@@ -19,19 +23,10 @@ else
     exit 1
 fi
 
-# Because Claude Code doesn't support direct API key input, we create a helper script
-# that reads the API key from an environment variable.
-# See: https://github.com/anthropics/claude-code/issues/1084
-if [[ -z "${ANTHROPIC_API_KEY}" ]]; then
-    echo "Error: ANTHROPIC_API_KEY environment variable is not set."
-    echo "Please set it to your Anthropic API key and re-run this script."
-    exit 1
-else
-    echo "ANTHROPIC_API_KEY detected. Setting up API key helper..."
+# if ~/.claude/CLAUDE.md doesn't exist, create a symlink to the one in this repo
+if [[ ! -f ~/.claude/CLAUDE.md ]]; then
     mkdir -p ~/.claude
-    cp ./dotfiles/claude/settings.json ~/.claude/settings.json
-    echo "#!/bin/bash\necho \"${ANTHROPIC_API_KEY}\"" > ~/.claude/apiKeyHelper.sh
-    chmod ug+x ~/.claude/apiKeyHelper.sh
+    ln -s ~/.dotfiles/dotfiles/claude/CLAUDE.md ~/.claude/CLAUDE.md
 fi
 
 # Done

@@ -1,22 +1,18 @@
 #!/usr/bin/env bash
 set -e
 
+source "$HOME/.dotfiles/dotfiles/utilities.sh"
+
 # copy .bash_profile
-[ -f ~/.bash_profile ] && cp ~/.bash_profile ~/.bash_profile.bak
-cp ~/.dotfiles/bash/bash_profile ~/.bash_profile
+backup_or_rm_symlink "$HOME/.bash_profile"
+ln -s ~/.dotfiles/dotfiles/bash/bash_profile ~/.bash_profile
+[ ! -f ~/.bash_profile.local ] && cp ~/.dotfiles/dotfiles/bash/bash_profile.local ~/.bash_profile.local
 
 # copy .bashrc
-[ -f ~/.bashrc ] && cp ~/.bashrc ~/.bashrc.bak
-cp ~/.dotfiles/bash/bashrc ~/.bashrc
-
-# copy .aliases
-[ -f ~/.aliases ] && cp ~/.aliases ~/.aliases.bak
-cp ~/.dotfiles/aliases ~/.aliases
+backup_or_rm_symlink "$HOME/.bashrc"
+ln -s ~/.dotfiles/dotfiles/bash/bashrc ~/.bashrc
+[ ! -f ~/.bashrc.local ] && cp ~/.dotfiles/dotfiles/bash/bashrc.local ~/.bashrc.local
 
 # Set up the .bash_history file
 [ -f ~/.bash_history ] || touch ~/.bash_history
 
-# Add aliases sourcing to .profile
-if ! grep -q "source \$HOME/.aliases" ~/.profile 2>/dev/null; then
-    echo "[ -f \$HOME/.aliases ] && source \$HOME/.aliases" >> ~/.profile
-fi

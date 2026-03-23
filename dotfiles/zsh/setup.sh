@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+source "$HOME/.dotfiles/dotfiles/utilities.sh"
+
 # Set ZDOTDIR to the home directory if not already set
 export ZDOTDIR="${ZDOTDIR:-$HOME}"
 
@@ -12,23 +14,20 @@ if [ ! -d "${ZDOTDIR:-~}/.antidote" ]; then
     }
 fi
 
-# copy .zshenv
-[ -f ~/.zshenv ] && cp ~/.zshenv ~/.zshenv.bak
-cp ~/.dotfiles/zsh/zshenv ~/.zshenv
+# .zshenv
+backup_or_rm_symlink "$HOME/.zshenv"
+ln -s ~/.dotfiles/dotfiles/zsh/zshenv ~/.zshenv
+[ ! -f ~/.zshenv.local ] && cp ~/.dotfiles/dotfiles/zsh/zshenv.local ~/.zshenv.local
 
-# copy .zshrc
-[ -f ~/.zshrc ] && cp ~/.zshrc ~/.zshrc.bak
-cp ~/.dotfiles/zsh/zshrc ~/.zshrc
+# .zshrc
+backup_or_rm_symlink "$HOME/.zshrc"
+ln -s ~/.dotfiles/dotfiles/zsh/zshrc ~/.zshrc
+[ ! -f ~/.zshrc.local ] && cp ~/.dotfiles/dotfiles/zsh/zshrc.local ~/.zshrc.local
 
-# copy .zsh_plugins.txt
-[ -f ~/.zsh_plugins.txt ] && cp ~/.zsh_plugins.txt ~/.zsh_plugins.txt.bak
-cp ~/.dotfiles/zsh/zsh_plugins.txt ~/.zsh_plugins.txt
+# .zsh_plugins.txt
+backup_or_rm_symlink "$HOME/.zsh_plugins.txt"
+ln -s ~/.dotfiles/dotfiles/zsh/zsh_plugins.txt ~/.zsh_plugins.txt
 
-# Set up the .zsh_history file
+# .zsh_history
 [ -f ~/.zsh_history ] || touch ~/.zsh_history
 
-# Add local user completions to .zshrc
-if ! grep -q "fpath+=\~/.zsh/completions" ~/.zshrc; then
-    sed -i '1s/^/typeset -gaU fpath=($fpath ~\/.zsh\/completions)\n\n/' ~/.zshrc
-    echo "Added '~/.zsh/completions' to .zshrc"
-fi
