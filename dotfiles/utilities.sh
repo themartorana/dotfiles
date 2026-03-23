@@ -31,3 +31,9 @@ backup_or_rm_symlink() {
         mv "$1" "$1.bak"
     fi
 }
+
+echo_section() {
+    echo
+    echo "=== $1 ==="
+    echo
+}

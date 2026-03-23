@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-echo "Installing Claude Code..."
+# check to see if already installed
+if command -v claude >/dev/null 2>&1; then
+    echo "Claude Code is already installed, skipping installation."
+    exit 0
+fi
 
 # Prefer native installer for better performance and no dependencies
 if [[ "$OSTYPE" == "darwin"* ]] || [[ "$OSTYPE" == "linux-gnu"* ]] || [[ -n "$WSL_DISTRO_NAME" ]]; then

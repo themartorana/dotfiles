@@ -37,25 +37,30 @@ if [ ! -f "$CHECKFILE" ]; then
     # Use your $SHELL to determine which setup script to run,
     # and if it's neither bash or zsh, default to bash and 
     # inform the user.
-    echo "Setting up zsh..."
+    echo_section "Setting up zsh..."
     source ~/.dotfiles/dotfiles/zsh/setup.sh
 
-    echo "Setting up bash..."
+    echo_section "Setting up bash..."
     source ~/.dotfiles/dotfiles/bash/setup.sh
 
     # Setup Starship.rs
+    echo_section "Setting up Starship..."
     source ~/.dotfiles/dotfiles/starship/setup.sh
 
     # Install ASDF - not by default
+    # echo_section "Setting up ASDF..."
     # source ~/.dotfiles/dotfiles/asdf/setup.sh 
 
     # Install FZF
+    echo_section "Setting up FZF..."
     source ~/.dotfiles/dotfiles/fzf/setup.sh
 
     # VSCode settings
+    echo_section "Setting up VSCode extensions..."
     source ~/.dotfiles/dotfiles/vscode/setup.sh
 
     # Install Claude Code
+    echo_section "Setting up Claude Code..."
     source ~/.dotfiles/dotfiles/claude/setup.sh
 
     # Make sure we don't do it again
