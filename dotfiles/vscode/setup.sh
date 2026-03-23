@@ -38,6 +38,8 @@ set -e
 # ${codebin} --install-extension redhat.vscode-yaml
 
 # Only link if not already linked
-if [ ! -L ~/.vscode-extensions-installer ]; then
-    ln -s ~/.dotfiles/dotfiles/vscode/.vscode-extensions-installer ~/.vscode-extensions-installer
-fi
+# if [ ! -L ~/.vscode-extensions-installer ]; then
+#     ln -s ~/.dotfiles/dotfiles/vscode/.vscode-extensions-installer ~/.vscode-extensions-installer
+# fi
+
+source .vscode-extensions-installer && install_extensions
