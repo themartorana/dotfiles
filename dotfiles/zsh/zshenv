@@ -1,5 +1,5 @@
+# Load .profile if it exists
+[[ -s "$HOME/.profile" ]] && source "$HOME/.profile"
+
 # Load .zshenv.local if it exists
 [[ -s "$HOME/.zshenv.local" ]] && source "$HOME/.zshenv.local"
-
-# Load .zshrc if it exists instead of putting things here
-[[ -s "$HOME/.zshrc" ]] && source "$HOME/.zshrc"

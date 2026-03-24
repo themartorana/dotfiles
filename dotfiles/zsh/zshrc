@@ -1,5 +1,3 @@
-[[ -s "$HOME/.profile" ]] && source "$HOME/.profile"
-
 # History
 SAVEHIST=10000
 HISTSIZE=10000
@@ -53,6 +51,9 @@ export FZF_DEFAULT_OPTS='
   --color info:108,prompt:109,spinner:108,pointer:168,marker:168
 '
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Source aliases if the file exists
+[ -f $HOME/.aliases ] && source $HOME/.aliases
 
 # Load local .zshrc.local if it exists
 [[ -s "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"

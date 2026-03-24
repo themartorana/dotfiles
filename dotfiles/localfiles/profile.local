@@ -1,0 +1,4 @@
+# Put anything here that you would want to be loaded in .profile, 
+# but that you do not want to be tracked by git. This is a good place 
+# to put environment variables that you want to be available in all 
+# shells, including non-interactive ones.

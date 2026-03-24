@@ -1,4 +1,5 @@
-[[ -f "$HOME/.bashrc" ]] && source "$HOME/.bashrc"
+# Source aliases if the file exists
+[ -f $HOME/.profile ] && source $HOME/.profile
 
 # Local
 [[ -f "$HOME/.bash_profile.local" ]] && source "$HOME/.bash_profile.local"
