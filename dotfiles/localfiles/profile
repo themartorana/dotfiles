@@ -12,6 +12,7 @@ export EC2_HOME=$HOME/.ec2
 PATH=$PATH:$EC2_HOME/bin
 
 # Export full path
+export LOCALPATH
 export PATH
 
 [ -f $HOME/.profile.local ] && source $HOME/.profile.local
