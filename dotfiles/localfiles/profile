@@ -1,8 +1,6 @@
 # All paths we're adding.
 # Each line here appends another path
-LOCALPATH=$LOCALPATH:$HOME/bin
-LOCALPATH=$LOCALPATH:$HOME/.local/bin
-LOCALPATH=$LOCALPATH:$HOME/.cargo/bin
+LOCALPATH=$HOME/bin:$HOME/.local/bin:$HOME/.cargo/bin
 
 # Look locally first
 PATH=$LOCALPATH:$PATH
