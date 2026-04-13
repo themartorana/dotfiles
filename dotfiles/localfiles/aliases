@@ -10,8 +10,81 @@ alias gco='git checkout'
 alias glc='git rev-parse --verify HEAD'
 alias glcs='git rev-parse --verify --short HEAD'
 alias gm='git merge'
+alias glog="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 
 alias ls='ls --color=auto'
 alias rm='rm -i'
+
+tnssh (){
+	if [ -z "$1" ]; then
+		echo "SSH into a tailnet machine by DNS name search. Use: tnssh <user>@<search>"
+		return 1
+	fi
+
+	local user search
+	user="${1%%@*}"
+	search="${1##*@}"
+
+	if [ -z "$search" ] || [ "$user" = "$search" ]; then
+		echo "Invalid format. Use: tnssh <user>@<search>"
+		return 1
+	fi
+
+	local result
+	result=$(tnsearch "${search}")
+
+	local count
+	count=$(echo "${result}" | jq 'length')
+
+	if [ -z "$count" ] || [ "$count" -eq 0 ]; then
+		echo "No matching host found for: ${search}"
+		return 1
+	fi
+
+	local idx=0
+	if [ "$count" -gt 1 ]; then
+		echo "Multiple hosts found:"
+		local i=1
+		while IFS= read -r key; do
+			echo "  ${i}) ${key}"
+			((i++))
+		done < <(echo "${result}" | jq -r 'keys[]')
+
+		echo -n "Select host [1-${count}]: "
+		read selection
+
+		if ! [[ "$selection" =~ ^[0-9]+$ ]] || [ "$selection" -lt 1 ] || [ "$selection" -gt "$count" ]; then
+			echo "Invalid selection"
+			return 1
+		fi
+		idx=$((selection - 1))
+	fi
+
+	local ip dns
+	ip=$(echo "${result}" | jq -r "to_entries[${idx}].value")
+	dns=$(echo "${result}" | jq -r "to_entries[${idx}].key")
+	echo "Connecting to ${user}@${dns} (${ip})..."
+
+	ssh "${user}@${ip}"
+}
+
+#
+# by DNS name or IP address
+tninfo (){
+    if [ -z "$1" ]; then
+        echo "Get the entire info packet of a machine from tailscale by DNS name. Please provide a DNS name to use."
+        return 1
+    fi
+
+	tailscale status --json \
+		| jq --arg query "${1}" '
+			.Peer
+			| to_entries[]
+			| select(
+				.value.DNSName
+				| contains($query)
+			)
+		'
+}
 
 [ -f $HOME/.aliases.local ] && source $HOME/.aliases.local
