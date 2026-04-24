@@ -1,6 +1,7 @@
 # All paths we're adding.
 # Each line here appends another path
 LOCALPATH=$HOME/bin:$HOME/.local/bin:$HOME/.cargo/bin
+LOCALPATH=$LOCALPATH:/opt/homebrew/bin
 
 # Look locally first
 PATH=$LOCALPATH:$PATH
