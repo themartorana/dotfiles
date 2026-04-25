@@ -1,0 +1,5 @@
+# Load profile fom .profile
+[[ -s "${HOME}/.profile" ]] && source "${HOME}/.profile"
+
+# Local
+[[ -f "$HOME/.zprofile.local" ]] && source "$HOME/.zprofile.local"

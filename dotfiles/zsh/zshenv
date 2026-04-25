@@ -1,5 +1,2 @@
-# Load profile
-[[ -s "$HOME/.profile" ]] && source "$HOME/.profile"
-
 # Load .zshenv.local if it exists
-[[ -s "$HOME/.zshenv.local" ]] && source "$HOME/.zshenv.local"
+[[ -s "${HOME}/.zshenv.local" ]] && source "${HOME}/.zshenv.local"

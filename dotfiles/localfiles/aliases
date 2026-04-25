@@ -15,6 +15,32 @@ alias glog="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset
 alias ls='ls --color=auto'
 alias rm='rm -i'
 
+tnsearch (){
+    if [ -z "$1" ]; then
+        echo "Search DNS names of machines on the tailnet."
+        return 1
+    fi
+
+	tailscale status --json \
+		| jq --arg query "${1}" '
+			[
+				.Peer
+				| to_entries[]
+				| select(
+					.value.DNSName
+					| contains($query)
+				)
+				| {
+					(.value.DNSName): [
+						.value.TailscaleIPs[]
+						| select(startswith("100."))
+					][0]
+				}
+			]
+			| add
+		'
+}
+
 tnssh (){
 	if [ -z "$1" ]; then
 		echo "SSH into a tailnet machine by DNS name search. Use: tnssh <user>@<search>"

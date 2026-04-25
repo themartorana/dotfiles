@@ -1,17 +1,18 @@
 # All paths we're adding.
 # Each line here appends another path
-LOCALPATH=$HOME/bin:$HOME/.local/bin:$HOME/.cargo/bin
-LOCALPATH=$LOCALPATH:/opt/homebrew/bin
+LOCALPATH=${HOME}/bin:${HOME}/.local/bin:${HOME}/.cargo/bin
+LOCALPATH=${LOCALPATH}:/opt/homebrew/bin:/opt/homebrew/sbin
 
 # Look locally first
-PATH=$LOCALPATH:$PATH
+PATH=${LOCALPATH}:${PATH}
 
 # Setup Amazon EC2 Command-Line Tools
-export EC2_HOME=$HOME/.ec2
-PATH=$PATH:$EC2_HOME/bin
+export EC2_HOME=${HOME}/.ec2
+PATH=${PATH}:${EC2_HOME}/bin
 
 # Export full path
 export LOCALPATH
 export PATH
 
-[ -f $HOME/.profile.local ] && source $HOME/.profile.local
+# shellcheck disable=SC1091
+[[ -f ${HOME}/.profile.local ]] && source "${HOME}/.profile.local"

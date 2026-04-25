@@ -24,6 +24,11 @@ backup_or_rm_symlink "$HOME/.zshrc"
 ln -s ~/.dotfiles/dotfiles/zsh/zshrc ~/.zshrc
 [ ! -f ~/.zshrc.local ] && cp ~/.dotfiles/dotfiles/zsh/zshrc.local ~/.zshrc.local
 
+# .zprofile
+backup_or_rm_symlink "$HOME/.zprofile"
+ln -s ~/.dotfiles/dotfiles/zsh/zprofile ~/.zprofile
+[ ! -f ~/.zprofile.local ] && cp ~/.dotfiles/dotfiles/zsh/zprofile.local ~/.zprofile.local
+
 # .zsh_plugins.txt
 backup_or_rm_symlink "$HOME/.zsh_plugins.txt"
 ln -s ~/.dotfiles/dotfiles/zsh/zsh_plugins.txt ~/.zsh_plugins.txt
