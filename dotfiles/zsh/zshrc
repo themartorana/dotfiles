@@ -1,5 +1,3 @@
-echo "Loading .zshrc"
-
 # History
 SAVEHIST=10000
 HISTSIZE=10000
@@ -62,3 +60,4 @@ export FZF_DEFAULT_OPTS='
 
 # VSCode Extensions installer
 [[ -f ~/.vscode-extensions-installer ]] && source ~/.vscode-extensions-installer && install_extensions
+
