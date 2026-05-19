@@ -15,8 +15,25 @@ alias glog="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset
 alias ls='ls --color=auto'
 alias rm='rm -i'
 
+# gotags prints out all versioned semver tags
+gotags() {
+    cmd='git tag --sort=version:refname'
+    if [ -n "$1" ]
+    then
+        if [[ "${1}" == "current" ]]
+        then
+            cmd="${cmd} | grep --color=always \"^v\d\+\.\" | tail -1"
+        else
+            cmd="${cmd} | grep --color=always \"${1}\.\""
+        fi
+    else
+        cmd="${cmd} | grep --color=always \"^v\d\+\.\""
+    fi
+    /bin/sh -c "${cmd}"
+}
+
 tnsearch (){
-    if [ -z "$1" ]; then
+    if [[ -z "$1" ]]; then
         echo "Search DNS names of machines on the tailnet."
         return 1
     fi
@@ -42,7 +59,7 @@ tnsearch (){
 }
 
 tnssh (){
-	if [ -z "$1" ]; then
+	if [[ -z "$1" ]]; then
 		echo "SSH into a tailnet machine by DNS name search. Use: tnssh <user>@<search>"
 		return 1
 	fi
@@ -51,35 +68,35 @@ tnssh (){
 	user="${1%%@*}"
 	search="${1##*@}"
 
-	if [ -z "$search" ] || [ "$user" = "$search" ]; then
+	if [[ -z "${search}" ]] || [[ "${user}" = "${search}" ]]; then
 		echo "Invalid format. Use: tnssh <user>@<search>"
 		return 1
 	fi
 
 	local result
-	result=$(tnsearch "${search}")
+	result=$(tnsearch "${search}" | jq '[to_entries[]] | sort_by(.key)')
 
 	local count
 	count=$(echo "${result}" | jq 'length')
 
-	if [ -z "$count" ] || [ "$count" -eq 0 ]; then
+	if [[ -z "${count}" ]] || [[ "${count}" -eq 0 ]]; then
 		echo "No matching host found for: ${search}"
 		return 1
 	fi
 
 	local idx=0
-	if [ "$count" -gt 1 ]; then
+	if [[ "${count}" -gt 1 ]]; then
 		echo "Multiple hosts found:"
 		local i=1
 		while IFS= read -r key; do
 			echo "  ${i}) ${key}"
 			((i++))
-		done < <(echo "${result}" | jq -r 'keys[]')
+		done < <(echo "${result}" | jq -r '.[].key')
 
 		echo -n "Select host [1-${count}]: "
 		read selection
 
-		if ! [[ "$selection" =~ ^[0-9]+$ ]] || [ "$selection" -lt 1 ] || [ "$selection" -gt "$count" ]; then
+		if ! [[ "${selection}" =~ ^[0-9]+$ ]] || [[ "${selection}" -lt 1 ]] || [[ "${selection}" -gt "${count}" ]]; then
 			echo "Invalid selection"
 			return 1
 		fi
@@ -87,8 +104,8 @@ tnssh (){
 	fi
 
 	local ip dns
-	ip=$(echo "${result}" | jq -r "to_entries[${idx}].value")
-	dns=$(echo "${result}" | jq -r "to_entries[${idx}].key")
+	ip=$(echo "${result}" | jq -r ".[${idx}].value")
+	dns=$(echo "${result}" | jq -r ".[${idx}].key")
 	echo "Connecting to ${user}@${dns} (${ip})..."
 
 	ssh "${user}@${ip}"
@@ -97,7 +114,7 @@ tnssh (){
 #
 # by DNS name or IP address
 tninfo (){
-    if [ -z "$1" ]; then
+    if [[ -z "$1" ]]; then
         echo "Get the entire info packet of a machine from tailscale by DNS name. Please provide a DNS name to use."
         return 1
     fi
@@ -113,4 +130,4 @@ tninfo (){
 		'
 }
 
-[ -f $HOME/.aliases.local ] && source $HOME/.aliases.local
+[[ -f ${HOME}/.aliases.local ]] && source ${HOME}/.aliases.local
