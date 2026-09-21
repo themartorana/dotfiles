@@ -1,7 +1,9 @@
 # History
-SAVEHIST=10000
-HISTSIZE=10000
-HISTFILE=~/.bash_history
+export HISTFILE=~/.bash_history
+export HISTSIZE=10000
+export HISTFILESIZE=20000
+shopt -s histappend
+export PROMPT_COMMAND='history -a'
 
 # Path
 LOCALPATH=$LOCALPATH:$HOME/bin
