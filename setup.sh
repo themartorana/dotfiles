@@ -54,13 +54,13 @@ if [ ! -f "$CHECKFILE" ]; then
     echo_section "Setting up FZF..."
     source ~/.dotfiles/dotfiles/fzf/setup.sh
 
-    # VSCode settings
-    echo_section "Setting up VSCode extensions..."
-    source ~/.dotfiles/dotfiles/vscode/setup.sh
+    # # VSCode settings
+    # echo_section "Setting up VSCode extensions..."
+    # source ~/.dotfiles/dotfiles/vscode/setup.sh
 
-    # Install Claude Code
-    echo_section "Setting up Claude Code..."
-    source ~/.dotfiles/dotfiles/claude/setup.sh
+    # # Install Claude Code
+    # echo_section "Setting up Claude Code..."
+    # source ~/.dotfiles/dotfiles/claude/setup.sh
 
     # Make sure we don't do it again
     touch "$CHECKFILE"
