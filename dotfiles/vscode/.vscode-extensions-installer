@@ -6,23 +6,34 @@ function install_extensions() {
         return
     fi
 
-    # Find vscode
+    # Only shells started by VSCode can talk to it. Over plain SSH the
+    # devcontainer's /usr/local/bin/code stub fails on every call.
+    if [ -z "${VSCODE_IPC_HOOK_CLI}" ]; then
+        return
+    fi
+
+    # Find vscode, and make sure it actually runs
     local codebin=$(which code || which code-insiders)
-    if [ -z "${codebin}" ]; then
+    if [ -z "${codebin}" ] || ! "${codebin}" --version >/dev/null 2>&1; then
         echo "VSCode not found."
         return
     fi
 
     # Check to see if letmaik.git-tree-compare is already installed
     if ! ${codebin} --list-extensions | grep -q letmaik.git-tree-compare; then
-        ${codebin} --install-extension letmaik.git-tree-compare
-        ${codebin} --install-extension anthropic.claude-code
-        ${codebin} --install-extension growthjack.claude-code-usage
-        ${codebin} --install-extension vivaxy.vscode-conventional-commits
-        ${codebin} --install-extension onatm.open-in-new-window
-        ${codebin} --install-extension redhat.vscode-yaml
-        if [ $? -eq 0 ]; then
-            touch ~/.vscode-extensions-installed
+        local failed=0
+        ${codebin} --install-extension letmaik.git-tree-compare || failed=1
+        ${codebin} --install-extension anthropic.claude-code || failed=1
+        ${codebin} --install-extension growthjack.claude-code-usage || failed=1
+        ${codebin} --install-extension vivaxy.vscode-conventional-commits ||
+            failed=1
+        ${codebin} --install-extension onatm.open-in-new-window || failed=1
+        ${codebin} --install-extension redhat.vscode-yaml || failed=1
+        if [ "${failed}" -ne 0 ]; then
+            return
         fi
     fi
+
+    # Mark as done, including when extensions were already installed
+    touch "${INSTALLED_CHECK_FILE}"
 }
