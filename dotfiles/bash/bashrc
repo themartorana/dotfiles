@@ -5,15 +5,8 @@ export HISTFILESIZE=20000
 shopt -s histappend
 export PROMPT_COMMAND='history -a'
 
-# Path
-LOCALPATH=$LOCALPATH:$HOME/bin
-LOCALPATH=$LOCALPATH:$HOME/.local/bin
-PATH=$LOCALPATH:$PATH
-
-export EC2_HOME=$HOME/.ec2
-PATH=$PATH:$EC2_HOME/bin
-
-export PATH
+# PATH and environment (idempotent; also loaded by .bash_profile)
+[ -f "$HOME/.profile" ] && source "$HOME/.profile"
 
 # Starship
 eval "$(starship init bash)"
@@ -29,7 +22,7 @@ export FZF_DEFAULT_OPTS='
   --color fg:242,bg:236,hl:65,fg+:15,bg+:239,hl+:108
   --color info:108,prompt:109,spinner:108,pointer:168,marker:168
 '
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+command -v fzf >/dev/null && eval "$(fzf --bash 2>/dev/null)"
 
 # Source aliases if the file exists
 [ -f $HOME/.aliases ] && source $HOME/.aliases

@@ -1,5 +1,8 @@
-# Source aliases if the file exists
-[ -f $HOME/.profile ] && source $HOME/.profile
+# PATH and environment
+[ -f "$HOME/.profile" ] && source "$HOME/.profile"
+
+# Interactive login shells get the same setup as non-login ones
+[[ $- == *i* && -f "$HOME/.bashrc" ]] && source "$HOME/.bashrc"
 
 # Local
 [[ -f "$HOME/.bash_profile.local" ]] && source "$HOME/.bash_profile.local"

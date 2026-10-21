@@ -1,4 +1,13 @@
-# Put anything here that you would want to be loaded in .profile, 
-# but that you do not want to be tracked by git. This is a good place 
-# to put environment variables that you want to be available in all 
-# shells, including non-interactive ones.
+# Put anything here that you would want to be loaded in .profile,
+# but that you do not want to be tracked by git: environment variables,
+# extra PATH entries, etc.
+#
+# Every zsh (interactive or script) and every interactive or login bash
+# sources this file, often more than once. Bash scripts only see what was
+# exported by the shell that started them. So this file must be:
+#   - POSIX sh (no [[ ]], arrays, etc.)
+#   - silent (no output)
+#   - idempotent (safe to source repeatedly)
+#
+# Use path_prepend / path_append for PATH entries; they never duplicate:
+#   path_prepend "$HOME/go/bin"

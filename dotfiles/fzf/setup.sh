@@ -8,4 +8,9 @@ if [ ! -d ~/.fzf ]; then
         exit 1
     }
 fi
-~/.fzf/install --all
+
+# Binary only: don't touch rc files (they're tracked symlinks) or add PATH
+# entries. Key bindings/completion are loaded in bashrc/zshrc via fzf itself.
+~/.fzf/install --bin
+mkdir -p ~/.local/bin
+ln -sf ~/.fzf/bin/fzf ~/.local/bin/fzf

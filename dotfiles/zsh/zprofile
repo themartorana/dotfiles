@@ -1,4 +1,5 @@
-# Load profile fom .profile
+# Re-load .profile: .zshenv already did, but on macOS /etc/zprofile runs
+# path_helper in between and moves system paths ahead of ours.
 [[ -s "${HOME}/.profile" ]] && source "${HOME}/.profile"
 
 # Local

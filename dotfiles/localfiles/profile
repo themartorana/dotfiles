@@ -1,21 +1,41 @@
-# All paths we're adding.
-# Each line here appends another path
-LOCALPATH=${HOME}/bin:${HOME}/.local/bin:${HOME}/.cargo/bin
-LOCALPATH=${LOCALPATH}:/opt/homebrew/bin:/opt/homebrew/sbin
+# Single source of PATH (and other environment) for every shell.
+# Sourced by every zsh (.zshenv, plus .zprofile to undo macOS path_helper
+# reordering) and by bash (.bash_profile, .bashrc). Sourced repeatedly, so
+# keep it POSIX, silent and idempotent.
 
-# Look locally first
-PATH=${LOCALPATH}:${PATH}
+# Move $1 to the front (path_prepend) or back (path_append) of PATH,
+# removing any existing occurrence so repeated sourcing never duplicates.
+_path_without() {
+    _p=":$PATH:"
+    while :; do
+        case "$_p" in
+            *":$1:"*) _p="${_p%%":$1:"*}:${_p#*":$1:"}" ;;
+            *) break ;;
+        esac
+    done
+    _p="${_p#:}"
+    _p="${_p%:}"
+}
+path_prepend() { _path_without "$1"; PATH="$1${_p:+:$_p}"; unset _p; }
+path_append() { _path_without "$1"; PATH="${_p:+$_p:}$1"; unset _p; }
+
+# Look locally first. Prepends run bottom-up: the last line ends up first.
+path_prepend /opt/homebrew/sbin
+path_prepend /opt/homebrew/bin
+path_prepend "${HOME}/.cargo/bin"
+path_prepend "${HOME}/.local/bin"
+path_prepend "${HOME}/bin"
 
 # Setup Amazon EC2 Command-Line Tools
-export EC2_HOME=${HOME}/.ec2
-PATH=${PATH}:${EC2_HOME}/bin
+export EC2_HOME="${HOME}/.ec2"
+path_append "${EC2_HOME}/bin"
 
-# Export full path
-export LOCALPATH
 export PATH
 
 # shellcheck disable=SC1091
-[[ -f ${HOME}/.profile.local ]] && source "${HOME}/.profile.local"
+[ -f "${HOME}/.profile.local" ] && . "${HOME}/.profile.local"
+
+unset -f _path_without path_prepend path_append
 
 # XDG Base Directory Specification
 # Will not override specifications in .profile.local
@@ -23,5 +43,4 @@ export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
-export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$UID}"
-
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/${UID:-$(id -u)}}"
