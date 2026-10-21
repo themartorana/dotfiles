@@ -45,6 +45,11 @@ if [ ! -f "$CHECKFILE" ]; then
     ln -s ~/.dotfiles/dotfiles/localfiles/aliases ~/.aliases
     [ ! -f ~/.aliases.local ] && cp ~/.dotfiles/dotfiles/localfiles/aliases.local ~/.aliases.local
 
+    # link ~/.claude/CLAUDE.md
+    mkdir -p ~/.claude
+    backup_or_rm_symlink "$HOME/.claude/CLAUDE.md"
+    ln -s ~/.dotfiles/dotfiles/localfiles/CLAUDE.md ~/.claude/CLAUDE.md
+
     # Use your $SHELL to determine which setup script to run,
     # and if it's neither bash or zsh, default to bash and 
     # inform the user.
@@ -69,10 +74,6 @@ if [ ! -f "$CHECKFILE" ]; then
     # # VSCode settings
     # echo_section "Setting up VSCode extensions..."
     # source ~/.dotfiles/dotfiles/vscode/setup.sh
-
-    # # Install Claude Code
-    # echo_section "Setting up Claude Code..."
-    # source ~/.dotfiles/dotfiles/claude/setup.sh
 
     # Make sure we don't do it again
     touch "$CHECKFILE"
