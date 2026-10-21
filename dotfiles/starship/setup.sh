@@ -3,7 +3,7 @@ set -e
 
 # Install starship
 if ! command -v starship >/dev/null 2>&1; then
-    curl -sS https://starship.rs/install.sh | sh -s -- -y || {
+    curl -sS https://starship.rs/install.sh | sh -s -- -y -b "$HOME/.local/bin" || {
         echo "Error: Failed to install starship"
         exit 1
     }

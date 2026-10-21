@@ -5,6 +5,18 @@ echo "Setting up via dotfiles..."
 
 source "./dotfiles/utilities.sh"
 
+# Tools install to ~/.local/bin; make them visible to the rest of setup.
+mkdir -p "$HOME/.local/bin"
+export PATH="$HOME/.local/bin:$PATH"
+
+# Setup never uses elevated permissions. Shadow sudo with a stub that
+# fails immediately, so a headless run errors instead of hanging on a prompt.
+SUDO_SHIM="$(mktemp -d)"
+printf '#!/bin/sh\necho "setup.sh: blocked sudo $*" >&2\nexit 1\n' > "$SUDO_SHIM/sudo"
+chmod +x "$SUDO_SHIM/sudo"
+export PATH="$SUDO_SHIM:$PATH"
+trap 'rm -rf "$SUDO_SHIM"' EXIT
+
 CHECKFILE="$HOME/.dotfiles/initial-setup-done"
 if [ ! -f "$CHECKFILE" ]; then
     # Make directories
@@ -65,3 +77,8 @@ if [ ! -f "$CHECKFILE" ]; then
     # Make sure we don't do it again
     touch "$CHECKFILE"
 fi
+
+# Remove the sudo stub (matters when this script is sourced rather than run).
+PATH="${PATH#"$SUDO_SHIM:"}"
+rm -rf "$SUDO_SHIM"
+trap - EXIT
