@@ -11,4 +11,11 @@ fi
 
 # Coming from pure prompt
 mkdir -p ~/.config
-starship preset pure-preset -o ~/.config/starship.toml
+# scan_timeout (ms, default 30) is a top-level key, so it must come before
+# any [table] in the preset. Raised to avoid "Scanning current directory
+# timed out" warnings in large directories.
+{
+    echo "scan_timeout = 500"
+    echo
+    starship preset pure-preset
+} > ~/.config/starship.toml
