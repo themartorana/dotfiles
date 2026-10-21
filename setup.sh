@@ -10,12 +10,21 @@ mkdir -p "$HOME/.local/bin"
 export PATH="$HOME/.local/bin:$PATH"
 
 # Setup never uses elevated permissions. Shadow sudo with a stub that
-# fails immediately, so a headless run errors instead of hanging on a prompt.
-SUDO_SHIM="$(mktemp -d)"
-printf '#!/bin/sh\necho "setup.sh: blocked sudo $*" >&2\nexit 1\n' > "$SUDO_SHIM/sudo"
+# fails immediately (and logs), so a headless run errors instead of hanging
+# on a prompt or silently elevating. Fixed path, no trap: never touches the
+# caller's EXIT handler when this script is sourced.
+SETUP_LOG="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles/setup.log"
+SUDO_SHIM="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/sudo-shim"
+mkdir -p "$SUDO_SHIM" "$(dirname "$SETUP_LOG")"
+cat > "$SUDO_SHIM/sudo" <<SHIM
+#!/bin/sh
+msg="setup.sh: blocked sudo \$*"
+echo "\$msg" >&2
+echo "\$(date -u +%Y-%m-%dT%H:%M:%SZ) \$msg (cwd: \$PWD)" >> "$SETUP_LOG"
+exit 1
+SHIM
 chmod +x "$SUDO_SHIM/sudo"
 export PATH="$SUDO_SHIM:$PATH"
-trap 'rm -rf "$SUDO_SHIM"' EXIT
 
 CHECKFILE="$HOME/.dotfiles/initial-setup-done"
 if [ ! -f "$CHECKFILE" ]; then
@@ -82,4 +91,4 @@ fi
 # Remove the sudo stub (matters when this script is sourced rather than run).
 PATH="${PATH#"$SUDO_SHIM:"}"
 rm -rf "$SUDO_SHIM"
-trap - EXIT
+unset SUDO_SHIM SETUP_LOG

@@ -50,7 +50,13 @@ export FZF_DEFAULT_OPTS='
   --color fg:242,bg:236,hl:65,fg+:15,bg+:239,hl+:108
   --color info:108,prompt:109,spinner:108,pointer:168,marker:168
 '
-(( $+commands[fzf] )) && source <(fzf --zsh 2>/dev/null)
+# fzf >= 0.48 provides its own integration; older installs use the legacy file
+if _fzf_init="$(fzf --zsh 2>/dev/null)"; then
+    eval "$_fzf_init"
+elif [[ -f ~/.fzf.zsh ]]; then
+    source ~/.fzf.zsh
+fi
+unset _fzf_init
 
 # Source aliases if the file exists
 [[ -f $HOME/.aliases ]] && source $HOME/.aliases

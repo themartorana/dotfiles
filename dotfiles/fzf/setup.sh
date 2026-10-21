@@ -7,6 +7,9 @@ if [ ! -d ~/.fzf ]; then
         echo "Error: Failed to clone fzf repository"
         exit 1
     }
+else
+    # Shell integration needs fzf >= 0.48 (`fzf --bash` / `fzf --zsh`)
+    git -C ~/.fzf pull --ff-only || echo "Warning: could not update ~/.fzf"
 fi
 
 # Binary only: don't touch rc files (they're tracked symlinks) or add PATH
