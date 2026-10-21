@@ -1,2 +1,5 @@
+# Load .profile: PATH and environment for every zsh, including scripts
+[[ -s "${HOME}/.profile" ]] && source "${HOME}/.profile"
+
 # Load .zshenv.local if it exists
 [[ -s "${HOME}/.zshenv.local" ]] && source "${HOME}/.zshenv.local"
