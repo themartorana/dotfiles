@@ -66,6 +66,3 @@ unset _fzf_init
 
 # VSCode Extensions installer
 [[ -f ~/.vscode-extensions-installer ]] && source ~/.vscode-extensions-installer && install_extensions
-
-# Added by Maestro CLI installer
-export PATH="$HOME/.local/bin:$PATH"

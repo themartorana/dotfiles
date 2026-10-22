@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+source "$HOME/.dotfiles/dotfiles/utilities.sh"
+
 # Install starship
 if ! command -v starship >/dev/null 2>&1; then
     curl -sS https://starship.rs/install.sh | sh -s -- -y -b "$HOME/.local/bin" || {
@@ -9,13 +11,7 @@ if ! command -v starship >/dev/null 2>&1; then
     }
 fi
 
-# Coming from pure prompt
+# Tracked config (Pure preset plus our changes)
 mkdir -p ~/.config
-# scan_timeout (ms, default 30) is a top-level key, so it must come before
-# any [table] in the preset. Raised to avoid "Scanning current directory
-# timed out" warnings in large directories.
-{
-    echo "scan_timeout = 500"
-    echo
-    starship preset pure-preset
-} > ~/.config/starship.toml
+backup_or_rm_symlink "$HOME/.config/starship.toml"
+ln -s ~/.dotfiles/dotfiles/starship/starship.toml ~/.config/starship.toml
