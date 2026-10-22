@@ -6,13 +6,22 @@
 # Changes from the preset (everything else is Pure as generated):
 #   - scan_timeout
 #   - format: ${env_var.SSH_CONNECTION} and ${env_var.MACHINE_NAME} added
-#   - [directory]: full ~ path, repo folder in bold
+#   - "🌐 user@machine ~/path  branch*", then ❯ on line 2
+#   - Everforest Dark Medium colours (palette below; hex colours need a
+#     truecolor terminal): user@machine blue, path aqua, git all purple
+#     (all bold); the rest are Pure's colours in their Everforest versions
+#   - [directory]: full ~ path
+#   - [git_branch]: branch symbol (needs a Nerd Font)
 #   - the [username], [hostname] and [env_var.*] tables at the bottom
 
 # Top-level keys must come before any [table].
 # Raised from the default 30ms to avoid "Scanning current directory timed
 # out" warnings in large directories.
 scan_timeout = 500
+
+# Everforest Dark Medium (https://everforest.vercel.app/palette), defined in
+# [palettes.everforest] below.
+palette = "everforest"
 
 "$schema" = 'https://starship.rs/config-schema.json'
 
@@ -31,27 +40,27 @@ $python\
 $character"""
 
 [directory]
-style = "blue"
-# Ours: full path from ~ (like Pure itself) with the repo folder in bold.
+style = "bold ef_aqua"
+# Ours: full path from ~ (like Pure itself).
 # If paths get unruly, fish_style_pwd_dir_length = 1 (and dropping the two
 # truncation lines) gives ~/.h/w/d/repo instead.
 truncation_length = 0
 truncate_to_repo = false
-before_repo_root_style = "blue"
-repo_root_style = "bold blue"
+before_repo_root_style = "bold ef_aqua"
+repo_root_style = "bold ef_aqua"
 
 [character]
-success_symbol = "[❯](purple)"
-error_symbol = "[❯](red)"
-vimcmd_symbol = "[❮](green)"
+success_symbol = "[❯](bold ef_purple)"
+error_symbol = "[❯](bold ef_red)"
+vimcmd_symbol = "[❮](bold ef_green)"
 
 [git_branch]
-format = "[$branch]($style)"
-style = "bright-black"
+format = "[$symbol$branch]($style)"
+style = "bold ef_purple"
 
 [git_status]
-format = "[[(*$conflicted$untracked$modified$staged$renamed$deleted)](218) ($ahead_behind$stashed)]($style)"
-style = "cyan"
+format = "[[(*$conflicted$untracked$modified$staged$renamed$deleted)](bold ef_purple) ($ahead_behind$stashed)]($style)"
+style = "bold ef_purple"
 conflicted = "​"
 untracked = "​"
 modified = "​"
@@ -62,19 +71,19 @@ stashed = "≡"
 
 [git_state]
 format = '\([$state( $progress_current/$progress_total)]($style)\) '
-style = "bright-black"
+style = "bold ef_purple"
 
 [cmd_duration]
 format = "[$duration]($style) "
-style = "yellow"
+style = "bold ef_yellow"
 
 [jj_bookmark]
 format = "[$bookmark(@$remote)$diverged( \\(+$overflow_count others\\))]($style)"
-style = "bright-black"
+style = "bold ef_purple"
 
 [jj_status]
-format = "[[(*$all)](218)]($style)"
-style = "cyan"
+format = "[[(*$all)](bold ef_purple)]($style)"
+style = "bold ef_purple"
 conflicted = "​"
 description_empty = ""
 description_present = ""
@@ -88,31 +97,44 @@ renamed = "​"
 
 [python]
 format = "[$virtualenv]($style) "
-style = "bright-black"
+style = "bold ef_grey1"
 detect_extensions = []
 detect_files = []
 
 # --- Machine name: always show user@machine, so you know where you are ---
 # The machine is $MACHINE_NAME if set (export it in ~/.profile.local),
-# otherwise the short hostname. Dim grey, like Pure's user@host.
+# otherwise the short hostname. All of user@machine in one colour:
+# blue. Everything in the prompt is bold.
 
 [username]
 show_always = true
 format = "[$user@]($style)"
-style_user = "bright-black"
-style_root = "bold red"
+style_user = "bold ef_blue"
+style_root = "bold ef_red"
 
 [env_var.MACHINE_NAME]
 format = "[$env_value]($style) "
-style = "bright-black"
+style = "bold ef_blue"
 
 [hostname]
 ssh_only = false
 # Hidden when MACHINE_NAME names the machine instead
 detect_env_vars = ["!MACHINE_NAME"]
 format = "[$hostname]($style) "
-style = "bright-black"
+style = "bold ef_blue"
 
 # Starship's SSH symbol, leading the line in any SSH session
 [env_var.SSH_CONNECTION]
 format = "🌐 "
+
+# --- Everforest Dark Medium palette (https://everforest.vercel.app/palette) ---
+# Only the colours used above. The ef_ prefix
+# keeps them from replacing the terminal's own colours.
+[palettes.everforest]
+ef_grey1 = "#859289"
+ef_blue = "#7fbbb3"
+ef_aqua = "#83c092"
+ef_purple = "#d699b6"
+ef_yellow = "#dbbc7f"
+ef_green = "#a7c080"
+ef_red = "#e67e80"
