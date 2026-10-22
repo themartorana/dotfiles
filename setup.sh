@@ -1,9 +1,31 @@
 #!/usr/bin/env bash
+
+# When sourced (`. ~/.dotfiles/setup.sh`, from bash or zsh), re-run in a
+# child bash so nothing leaks into the caller's shell: no `set -e`, no
+# exported variables, and no `exit` from a module closing the terminal.
+_dotfiles_setup=""
+if [ -n "${BASH_VERSION:-}" ]; then
+    [ "${BASH_SOURCE[0]}" != "$0" ] && _dotfiles_setup="${BASH_SOURCE[0]}"
+elif [ -n "${ZSH_VERSION:-}" ]; then
+    case "${ZSH_EVAL_CONTEXT:-}" in *:file*) _dotfiles_setup="$0" ;; esac
+fi
+if [ -n "$_dotfiles_setup" ]; then
+    bash "$_dotfiles_setup"
+    _dotfiles_rc=$?
+    unset _dotfiles_setup
+    [ "$_dotfiles_rc" -eq 0 ] && echo "Done. Start a new shell to pick up the changes."
+    # eval expands the status before the unset runs
+    eval "unset _dotfiles_rc; return $_dotfiles_rc"
+fi
+unset _dotfiles_setup
+
 set -e
 
 echo "Setting up via dotfiles..."
 
-source "./dotfiles/utilities.sh"
+# Resolve paths from the script's location, not the caller's cwd.
+DOTFILES_SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$DOTFILES_SRC/dotfiles/utilities.sh"
 
 # Tools install to ~/.local/bin; make them visible to the rest of setup.
 mkdir -p "$HOME/.local/bin"
@@ -11,8 +33,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # Setup never uses elevated permissions. Shadow sudo with a stub that
 # fails immediately (and logs), so a headless run errors instead of hanging
-# on a prompt or silently elevating. Fixed path, no trap: never touches the
-# caller's EXIT handler when this script is sourced.
+# on a prompt or silently elevating. Removed on exit, including on failure.
 SETUP_LOG="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles/setup.log"
 SUDO_SHIM="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/sudo-shim"
 mkdir -p "$SUDO_SHIM" "$(dirname "$SETUP_LOG")"
@@ -25,6 +46,7 @@ exit 1
 SHIM
 chmod +x "$SUDO_SHIM/sudo"
 export PATH="$SUDO_SHIM:$PATH"
+trap 'rm -rf "$SUDO_SHIM"' EXIT
 
 CHECKFILE="$HOME/.dotfiles/initial-setup-done"
 if [ ! -f "$CHECKFILE" ]; then
@@ -34,14 +56,14 @@ if [ ! -f "$CHECKFILE" ]; then
     mkdir -p ~/.config
     mkdir -p ~/.local/bin
 
-    # Check to see if we're already in ~/.dotfiles or a subdirectory
-    if [[ "$PWD" == "$HOME/.dotfiles"* ]]; then
-        echo "Already in ~/.dotfiles, skipping copy step"
+    # Skip the copy when this script already lives in ~/.dotfiles
+    if [[ "$DOTFILES_SRC" == "$HOME/.dotfiles" ]]; then
+        echo "Running from ~/.dotfiles, skipping copy step"
     else
         echo "Copying dotfiles to ~/.dotfiles..."
         # Copy dotfiles, including hidden files
         mkdir -p ~/.dotfiles
-        cp -rv . ~/.dotfiles
+        cp -rv "$DOTFILES_SRC/." ~/.dotfiles
     fi
 
     # Copy .profile 
@@ -87,8 +109,3 @@ if [ ! -f "$CHECKFILE" ]; then
     # Make sure we don't do it again
     touch "$CHECKFILE"
 fi
-
-# Remove the sudo stub (matters when this script is sourced rather than run).
-PATH="${PATH#"$SUDO_SHIM:"}"
-rm -rf "$SUDO_SHIM"
-unset SUDO_SHIM SETUP_LOG
