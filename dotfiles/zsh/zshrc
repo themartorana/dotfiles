@@ -1,7 +1,7 @@
 # History
 SAVEHIST=10000
 HISTSIZE=10000
-HISTFILE=~/.zsh_history
+HISTFILE=$HOME/.zsh_history
 setopt HIST_IGNORE_DUPS
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_FIND_NO_DUPS
@@ -9,7 +9,7 @@ setopt INC_APPEND_HISTORY
 setopt EXTENDED_HISTORY
 
 # fpath for local completions and Homebrew
-fpath=($fpath ~/.zsh/completions)
+fpath=($fpath $HOME/.zsh/completions)
 fpath=($fpath /opt/homebrew/share/zsh/site-functions)
 
 # compinit
@@ -67,3 +67,5 @@ unset _fzf_init
 # VSCode Extensions installer
 [[ -f ~/.vscode-extensions-installer ]] && source ~/.vscode-extensions-installer && install_extensions
 
+# Added by Maestro CLI installer
+export PATH="$HOME/.local/bin:$PATH"
