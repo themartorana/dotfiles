@@ -24,7 +24,8 @@ set -e
 echo "Setting up via dotfiles..."
 
 # Resolve paths from the script's location, not the caller's cwd.
-DOTFILES_SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# CDPATH cleared: a CDPATH match makes cd print the dir, polluting the capture.
+DOTFILES_SRC="$(CDPATH='' cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$DOTFILES_SRC/dotfiles/utilities.sh"
 
 # Tools install to ~/.local/bin; make them visible to the rest of setup.
