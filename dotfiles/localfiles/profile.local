@@ -11,3 +11,6 @@
 #
 # Use path_prepend / path_append for PATH entries; they never duplicate:
 #   path_prepend "$HOME/go/bin"
+#
+# Name this machine in the prompt (user@<name>); defaults to the short hostname:
+#   export MACHINE_NAME="laptop"

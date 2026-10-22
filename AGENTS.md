@@ -18,7 +18,7 @@ dotfiles/
   localfiles/            shell-agnostic files: profile, aliases, CLAUDE.md
   zsh/                   zshenv, zprofile, zshrc, zsh_plugins.txt (antidote)
   bash/                  bash_profile, bashrc
-  starship/              setup.sh only; generates ~/.config/starship.toml
+  starship/              starship.toml (prompt config)
   fzf/                   setup.sh only; installs the fzf binary
   vscode/                deprecated (see Modules)
   asdf/                  dormant, not wired into setup.sh; leave alone
@@ -38,6 +38,7 @@ Every module follows this pattern:
 | `~/.profile` | `localfiles/profile` | `~/.profile.local` |
 | `~/.aliases` | `localfiles/aliases` | `~/.aliases.local` |
 | `~/.claude/CLAUDE.md` | `localfiles/CLAUDE.md` | — |
+| `~/.config/starship.toml` | `starship/starship.toml` | — |
 | `~/.zshenv` | `zsh/zshenv` | `~/.zshenv.local` |
 | `~/.zprofile` | `zsh/zprofile` | `~/.zprofile.local` |
 | `~/.zshrc` | `zsh/zshrc` | `~/.zshrc.local` |
@@ -96,8 +97,10 @@ XDG variables are set *after* `.profile.local` loads, using `${VAR:-default}`. A
 - **bash:** links files only. Creates `~/.bash_history` if missing.
 - **starship:**
   - Installs to `~/.local/bin` with `curl … | sh`, skipped if `starship` is already on `PATH`.
-  - Always regenerates `~/.config/starship.toml` from `starship preset pure-preset`, adding `scan_timeout = 500` above it. That key is top-level, so it must come before any `[table]`.
-  - The toml isn't tracked. Change the prompt by editing `starship/setup.sh`.
+  - Links `~/.config/starship.toml` to the tracked `starship/starship.toml`. On machines set up before this change, the old generated file is renamed to `.bak`. Edit the prompt in the tracked file.
+  - That file is the Pure preset (`starship preset pure-preset` from starship 1.27.0) with our changes on top. Top-level keys such as `scan_timeout` must come before any `[table]`.
+  - Our changes are listed in the file's header. The directory is the full `~` path, like Pure itself, with the repo folder in bold. They always show `user@machine` (dim grey) before the directory, led by `🌐` in SSH sessions. The machine is `$MACHINE_NAME` if set (exported from `~/.profile.local`), otherwise the short hostname. Sandboxes and containers often have meaningless hostnames, which is why the override exists.
+  - Its `git_status` and `jj_status` symbols are zero-width spaces (U+200B), invisible in most editors. Keep them: an empty string would hide the `*` dirty marker.
 - **fzf:**
   - Clones `~/.fzf`, or `git pull --ff-only` if it exists. Runs `install --bin` (binary only, rc files untouched) and links `~/.fzf/bin/fzf` into `~/.local/bin`.
   - The rc files load key bindings with `fzf --bash` / `fzf --zsh`, which needs fzf ≥ 0.48. They fall back to the legacy `~/.fzf.{bash,zsh}`.
