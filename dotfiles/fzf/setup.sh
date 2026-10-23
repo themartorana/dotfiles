@@ -16,5 +16,22 @@ fi
 
 # Binary only: don't touch rc files (they're tracked symlinks) or add PATH
 # entries. Key bindings/completion are loaded in bashrc/zshrc via fzf itself.
-~/.fzf/install --bin
+# When the version changes, the installer deletes the old binary before it
+# downloads the new one. Keep a copy so a failed update leaves fzf working;
+# only a failed first install stops setup.
+fzf_backup=""
+if [ -x ~/.fzf/bin/fzf ]; then
+    fzf_backup="$(mktemp)"
+    cp -p ~/.fzf/bin/fzf "$fzf_backup"
+fi
+if ! ~/.fzf/install --bin; then
+    if [ -z "$fzf_backup" ]; then
+        echo "Error: Failed to install the fzf binary"
+        exit 1
+    fi
+    echo "Warning: fzf update failed; keeping the previous binary"
+    mkdir -p ~/.fzf/bin
+    cp -p "$fzf_backup" ~/.fzf/bin/fzf
+fi
+[ -z "$fzf_backup" ] || rm -f "$fzf_backup"
 link ~/.fzf/bin/fzf ~/.local/bin/fzf
