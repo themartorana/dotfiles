@@ -7,11 +7,11 @@
 #   - scan_timeout
 #   - format: ${env_var.SSH_CONNECTION}, ${env_var.MACHINE_NAME} and
 #     ${env_var.TAILNET_HOSTNAME} added
-#   - [directory]: full ~ path, repo folder in bold
 #   - "🌐 user@machine ~/path  branch*", then ❯ on line 2
 #   - Everforest Dark Medium colours (palette below; hex colours need a
 #     truecolor terminal): user@machine blue, path aqua, git all purple
 #     (all bold); the rest are Pure's colours in their Everforest versions
+#   - [directory]: full ~ path
 #   - [git_branch]: branch symbol (needs a Nerd Font)
 #   - the [username], [hostname] and [env_var.*] tables at the bottom
 
@@ -106,10 +106,10 @@ detect_files = []
 # --- Machine name: always show user@machine, so you know where you are ---
 # The machine is the first of:
 #   1. $MACHINE_NAME (export it in ~/.profile.local)
-#   2. $TAILNET_HOSTNAME (the tailnet MagicDNS name, set by bashrc/zshrc,
-#      which skip the lookup when MACHINE_NAME is set)
+#   2. $TAILNET_HOSTNAME (the tailnet MagicDNS name, set by bashrc/zshrc
+#      while tailscale is running; left unset when MACHINE_NAME is set)
 #   3. the short hostname
-# Dim grey, like Pure's user@host.
+# All of user@machine in one colour: blue. Everything in the prompt is bold.
 
 [username]
 show_always = true
@@ -123,7 +123,7 @@ style = "bold ef_blue"
 
 [env_var.TAILNET_HOSTNAME]
 format = "[$env_value]($style) "
-style = "bright-black"
+style = "bold ef_blue"
 
 [hostname]
 ssh_only = false
