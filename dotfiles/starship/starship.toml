@@ -5,7 +5,8 @@
 #
 # Changes from the preset (everything else is Pure as generated):
 #   - scan_timeout
-#   - format: ${env_var.SSH_CONNECTION} and ${env_var.MACHINE_NAME} added
+#   - format: ${env_var.SSH_CONNECTION}, ${env_var.MACHINE_NAME} and
+#     ${env_var.TAILNET_HOSTNAME} added
 #   - "🌐 user@machine ~/path  branch*", then ❯ on line 2
 #   - Everforest Dark Medium colours (palette below; hex colours need a
 #     truecolor terminal): user@machine blue, path aqua, git all purple
@@ -29,6 +30,7 @@ format = """
 ${env_var.SSH_CONNECTION}\
 $username\
 ${env_var.MACHINE_NAME}\
+${env_var.TAILNET_HOSTNAME}\
 $hostname\
 $directory\
 $git_branch\
@@ -102,9 +104,12 @@ detect_extensions = []
 detect_files = []
 
 # --- Machine name: always show user@machine, so you know where you are ---
-# The machine is $MACHINE_NAME if set (export it in ~/.profile.local),
-# otherwise the short hostname. All of user@machine in one colour:
-# blue. Everything in the prompt is bold.
+# The machine is the first of:
+#   1. $MACHINE_NAME (export it in ~/.profile.local)
+#   2. $TAILNET_HOSTNAME (the tailnet MagicDNS name, set by bashrc/zshrc
+#      while tailscale is running; left unset when MACHINE_NAME is set)
+#   3. the short hostname
+# All of user@machine in one colour: blue. Everything in the prompt is bold.
 
 [username]
 show_always = true
@@ -116,10 +121,14 @@ style_root = "bold ef_red"
 format = "[$env_value]($style) "
 style = "bold ef_blue"
 
+[env_var.TAILNET_HOSTNAME]
+format = "[$env_value]($style) "
+style = "bold ef_blue"
+
 [hostname]
 ssh_only = false
-# Hidden when MACHINE_NAME names the machine instead
-detect_env_vars = ["!MACHINE_NAME"]
+# Hidden when MACHINE_NAME or TAILNET_HOSTNAME names the machine instead
+detect_env_vars = ["!MACHINE_NAME", "!TAILNET_HOSTNAME"]
 format = "[$hostname]($style) "
 style = "bold ef_blue"
 
