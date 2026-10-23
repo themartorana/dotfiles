@@ -10,7 +10,7 @@ elif [ -n "${ZSH_VERSION:-}" ]; then
     case "${ZSH_EVAL_CONTEXT:-}" in *:file*) _dotfiles_setup="$0" ;; esac
 fi
 if [ -n "$_dotfiles_setup" ]; then
-    bash "$_dotfiles_setup"
+    bash "$_dotfiles_setup" "$@"
     _dotfiles_rc=$?
     unset _dotfiles_setup
     [ "$_dotfiles_rc" -eq 0 ] && echo "Done. Start a new shell to pick up the changes."
@@ -24,25 +24,62 @@ set -e
 # Everything runs inside main() so bash parses it all up front: a `git pull`
 # that rewrites this file mid-run can't change what's executing.
 main() {
+local relocate=""
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --relocate) relocate=1 ;;
+        *) echo "Usage: setup.sh [--relocate]" >&2; exit 2 ;;
+    esac
+    shift
+done
+
 echo "Setting up via dotfiles..."
 
-# Resolve paths from the script's location, not the caller's cwd.
+# The clone setup.sh lives in, wherever that is. Every link points into it.
 # CDPATH cleared: a CDPATH match makes cd print the dir, polluting the capture.
-DOTFILES_SRC="$(CDPATH='' cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DOTFILES="$HOME/.dotfiles"
-source "$DOTFILES_SRC/dotfiles/utilities.sh"
+DOTFILES="$(CDPATH='' cd -- "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+export DOTFILES
+source "$DOTFILES/dotfiles/utilities.sh"
 
-# Bring the source clone up to date, then restart with the new setup.sh if
-# the pull changed anything. DOTFILES_PULLED stops a second pull.
-if [ -z "${DOTFILES_PULLED:-}" ] && [ -d "$DOTFILES_SRC/.git" ]; then
-    echo "Updating $DOTFILES_SRC..."
-    local before after
-    before="$(git -C "$DOTFILES_SRC" rev-parse HEAD 2>/dev/null || true)"
-    git_update "$DOTFILES_SRC"
-    after="$(git -C "$DOTFILES_SRC" rev-parse HEAD 2>/dev/null || true)"
-    if [ "$before" != "$after" ]; then
-        echo "Updated to ${after:0:7}; restarting setup."
-        DOTFILES_PULLED=1 exec bash "$DOTFILES_SRC/setup.sh"
+# Guard against relinking home to another clone by accident (say, a
+# temporary checkout). ~/.profile shows which clone the links use now.
+OLD_DOTFILES=""
+if [ -L "$HOME/.profile" ]; then
+    case "$(readlink "$HOME/.profile")" in
+        */dotfiles/localfiles/profile)
+            OLD_DOTFILES="$(readlink "$HOME/.profile")"
+            OLD_DOTFILES="${OLD_DOTFILES%/dotfiles/localfiles/profile}" ;;
+    esac
+fi
+if [ -d "$OLD_DOTFILES" ]; then
+    OLD_DOTFILES="$(CDPATH='' cd -- "$OLD_DOTFILES" && pwd -P)"
+fi
+if [ -n "$OLD_DOTFILES" ] && [ "$OLD_DOTFILES" != "$DOTFILES" ]; then
+    if [ -f "$OLD_DOTFILES/setup.sh" ] && [ -z "$relocate" ]; then
+        echo "Error: your dotfiles are linked from $OLD_DOTFILES." >&2
+        echo "Run $OLD_DOTFILES/setup.sh instead, or re-run with --relocate" >&2
+        echo "to link them from $DOTFILES." >&2
+        exit 1
+    fi
+    echo "Relinking dotfiles from $OLD_DOTFILES to $DOTFILES"
+fi
+
+# Bring the clone up to date, then restart with the new setup.sh if the pull
+# changed anything. DOTFILES_PULLED stops a second pull. Local changes or
+# commits that block the pull are for the user to sort out.
+if [ -z "${DOTFILES_PULLED:-}" ]; then
+    if [ "$(git -C "$DOTFILES" rev-parse --show-toplevel 2>/dev/null)" = "$DOTFILES" ]; then
+        echo "Updating $DOTFILES..."
+        local before after
+        before="$(git -C "$DOTFILES" rev-parse HEAD)"
+        git_update "$DOTFILES"
+        after="$(git -C "$DOTFILES" rev-parse HEAD)"
+        if [ "$before" != "$after" ]; then
+            echo "Updated to ${after:0:7}; restarting setup."
+            DOTFILES_PULLED=1 exec bash "$DOTFILES/setup.sh" ${relocate:+--relocate}
+        fi
+    else
+        echo "Warning: $DOTFILES is not a git clone; using it as is"
     fi
 fi
 
@@ -75,25 +112,6 @@ trap 'rm -rf "$SUDO_SHIM" "$DOTFILES_LINKS_NEW"' EXIT
 # Make directories
 mkdir -p ~/bin ~/code ~/.config ~/.local/bin
 
-# Devcontainers and Codespaces clone dotfiles elsewhere; mirror that clone
-# into ~/.dotfiles (which the symlinks point into), dropping deleted files.
-if [ "$DOTFILES_SRC" = "$DOTFILES" ]; then
-    echo "Running from ~/.dotfiles, skipping copy step"
-else
-    echo "Mirroring $DOTFILES_SRC to ~/.dotfiles..."
-    rm -rf "$DOTFILES.new"
-    cp -R "$DOTFILES_SRC/." "$DOTFILES.new"
-    # Local edits in the old copy (e.g. through the ~/.zshrc symlink) would
-    # be lost; keep the old copy instead of deleting it.
-    if [ -d "$DOTFILES/.git" ] && [ -n "$(git -C "$DOTFILES" status --porcelain 2>/dev/null)" ]; then
-        local bak="$DOTFILES.bak.$(date +%Y%m%d%H%M%S)"
-        echo "Warning: ~/.dotfiles had uncommitted changes; moved it to $bak"
-        mv "$DOTFILES" "$bak"
-    else
-        rm -rf "$DOTFILES"
-    fi
-    mv "$DOTFILES.new" "$DOTFILES"
-fi
 # Left over from the old run-once setup
 rm -f "$DOTFILES/initial-setup-done"
 
@@ -129,10 +147,20 @@ source "$DOTFILES/dotfiles/fzf/setup.sh"
 
 echo_section "Removing stale links..."
 prune_links
+
+# Older setups copied the clone into ~/.dotfiles. Point out a copy that's
+# no longer linked; it may hold edits, so it's never deleted.
+if [ -d "$HOME/.dotfiles" ] \
+    && [ "$(CDPATH='' cd -- "$HOME/.dotfiles" && pwd -P)" != "$DOTFILES" ]; then
+    echo
+    echo "Note: ~/.dotfiles is no longer used (links now point into $DOTFILES)."
+    echo "Delete it once you've checked it holds nothing you need."
+fi
 }
 
 # Remove links this setup made before but no longer makes (still pointing
-# where we left them), and any link into ~/.dotfiles whose target is gone.
+# where we left them), and any link into the clone (or the one we relinked
+# from) whose target is gone.
 prune_links() {
     local dst src target
     if [ -f "$LINKS_MANIFEST" ]; then
@@ -151,7 +179,8 @@ prune_links() {
         [ -L "$dst" ] && [ ! -e "$dst" ] || continue
         target="$(readlink "$dst")"
         case "$target" in
-            "$DOTFILES"/*) rm "$dst"; echo "Removed broken link $dst" ;;
+            "$DOTFILES"/*|"${OLD_DOTFILES:-$DOTFILES}"/*)
+                rm "$dst"; echo "Removed broken link $dst" ;;
         esac
     done
     mv "$DOTFILES_LINKS_NEW" "$LINKS_MANIFEST"

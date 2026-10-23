@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
-source "$HOME/.dotfiles/dotfiles/utilities.sh"
+# The clone this script lives in (also set by setup.sh when it sources us)
+DOTFILES="$(CDPATH='' cd -- "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
+source "$DOTFILES/dotfiles/utilities.sh"
 
 # Install FZF
 if [ ! -d ~/.fzf ]; then

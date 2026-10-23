@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
-source "$HOME/.dotfiles/dotfiles/utilities.sh"
+# The clone this script lives in (also set by setup.sh when it sources us)
+DOTFILES="$(CDPATH='' cd -- "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
+source "$DOTFILES/dotfiles/utilities.sh"
 
 # Set ZDOTDIR to the home directory if not already set
 export ZDOTDIR="${ZDOTDIR:-$HOME}"
@@ -14,16 +16,16 @@ if [ ! -d "$ZDOTDIR/.antidote" ]; then
     }
 fi
 
-link ~/.dotfiles/dotfiles/zsh/zshenv ~/.zshenv
-seed_local ~/.dotfiles/dotfiles/zsh/zshenv.local ~/.zshenv.local
+link "$DOTFILES"/dotfiles/zsh/zshenv ~/.zshenv
+seed_local "$DOTFILES"/dotfiles/zsh/zshenv.local ~/.zshenv.local
 
-link ~/.dotfiles/dotfiles/zsh/zshrc ~/.zshrc
-seed_local ~/.dotfiles/dotfiles/zsh/zshrc.local ~/.zshrc.local
+link "$DOTFILES"/dotfiles/zsh/zshrc ~/.zshrc
+seed_local "$DOTFILES"/dotfiles/zsh/zshrc.local ~/.zshrc.local
 
-link ~/.dotfiles/dotfiles/zsh/zprofile ~/.zprofile
-seed_local ~/.dotfiles/dotfiles/zsh/zprofile.local ~/.zprofile.local
+link "$DOTFILES"/dotfiles/zsh/zprofile ~/.zprofile
+seed_local "$DOTFILES"/dotfiles/zsh/zprofile.local ~/.zprofile.local
 
-link ~/.dotfiles/dotfiles/zsh/zsh_plugins.txt ~/.zsh_plugins.txt
+link "$DOTFILES"/dotfiles/zsh/zsh_plugins.txt ~/.zsh_plugins.txt
 
 # Update antidote and the plugin bundles. `antidote bundle` first clones any
 # missing ones (`antidote update` errors when there are none). Without zsh,

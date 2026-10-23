@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
-source "$HOME/.dotfiles/dotfiles/utilities.sh"
+# The clone this script lives in (also set by setup.sh when it sources us)
+DOTFILES="$(CDPATH='' cd -- "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
+source "$DOTFILES/dotfiles/utilities.sh"
 
 # Install starship to ~/.local/bin, or update a copy we installed there.
 # A starship from elsewhere (e.g. Homebrew) is left to its own updater.
@@ -44,4 +46,4 @@ else
 fi
 
 # Tracked config (Pure preset plus our changes)
-link ~/.dotfiles/dotfiles/starship/starship.toml ~/.config/starship.toml
+link "$DOTFILES"/dotfiles/starship/starship.toml ~/.config/starship.toml
