@@ -5,7 +5,8 @@
 #
 # Changes from the preset (everything else is Pure as generated):
 #   - scan_timeout
-#   - format: ${env_var.SSH_CONNECTION} and ${env_var.MACHINE_NAME} added
+#   - format: ${env_var.SSH_CONNECTION}, ${env_var.MACHINE_NAME} and
+#     ${env_var.TAILNET_HOSTNAME} added
 #   - [directory]: full ~ path, repo folder in bold
 #   - the [username], [hostname] and [env_var.*] tables at the bottom
 
@@ -20,6 +21,7 @@ format = """
 ${env_var.SSH_CONNECTION}\
 $username\
 ${env_var.MACHINE_NAME}\
+${env_var.TAILNET_HOSTNAME}\
 $hostname\
 $directory\
 $git_branch\
@@ -93,8 +95,12 @@ detect_extensions = []
 detect_files = []
 
 # --- Machine name: always show user@machine, so you know where you are ---
-# The machine is $MACHINE_NAME if set (export it in ~/.profile.local),
-# otherwise the short hostname. Dim grey, like Pure's user@host.
+# The machine is the first of:
+#   1. $MACHINE_NAME (export it in ~/.profile.local)
+#   2. $TAILNET_HOSTNAME (the tailnet MagicDNS name, set by bashrc/zshrc,
+#      which skip the lookup when MACHINE_NAME is set)
+#   3. the short hostname
+# Dim grey, like Pure's user@host.
 
 [username]
 show_always = true
@@ -106,10 +112,14 @@ style_root = "bold red"
 format = "[$env_value]($style) "
 style = "bright-black"
 
+[env_var.TAILNET_HOSTNAME]
+format = "[$env_value]($style) "
+style = "bright-black"
+
 [hostname]
 ssh_only = false
-# Hidden when MACHINE_NAME names the machine instead
-detect_env_vars = ["!MACHINE_NAME"]
+# Hidden when MACHINE_NAME or TAILNET_HOSTNAME names the machine instead
+detect_env_vars = ["!MACHINE_NAME", "!TAILNET_HOSTNAME"]
 format = "[$hostname]($style) "
 style = "bright-black"
 

@@ -99,7 +99,8 @@ XDG variables are set *after* `.profile.local` loads, using `${VAR:-default}`. A
   - Installs to `~/.local/bin` with `curl … | sh`, skipped if `starship` is already on `PATH`.
   - Links `~/.config/starship.toml` to the tracked `starship/starship.toml`. On machines set up before this change, the old generated file is renamed to `.bak`. Edit the prompt in the tracked file.
   - That file is the Pure preset (`starship preset pure-preset` from starship 1.27.0) with our changes on top. Top-level keys such as `scan_timeout` must come before any `[table]`.
-  - Our changes are listed in the file's header. The directory is the full `~` path, like Pure itself, with the repo folder in bold. They always show `user@machine` (dim grey) before the directory, led by `🌐` in SSH sessions. The machine is `$MACHINE_NAME` if set (exported from `~/.profile.local`), otherwise the short hostname. Sandboxes and containers often have meaningless hostnames, which is why the override exists.
+  - Our changes are listed in the file's header. The directory is the full `~` path, like Pure itself, with the repo folder in bold. They always show `user@machine` (dim grey) before the directory, led by `🌐` in SSH sessions. The machine is the first of: `$MACHINE_NAME` (exported from `~/.profile.local`), `$TAILNET_HOSTNAME`, the short hostname. Sandboxes and containers often have meaningless hostnames, which is why the overrides exist.
+  - `TAILNET_HOSTNAME` is the first label of the machine's tailnet MagicDNS name. `bashrc` and `zshrc` set it before `starship init` (keep the two blocks in step). They run `tailscale status` + `jq` once per shell, skip the lookup if the variable is inherited, and unset it when `MACHINE_NAME` is set. Without tailscale, jq or a login, it stays unset.
   - Its `git_status` and `jj_status` symbols are zero-width spaces (U+200B), invisible in most editors. Keep them: an empty string would hide the `*` dirty marker.
 - **fzf:**
   - Clones `~/.fzf`, or `git pull --ff-only` if it exists. Runs `install --bin` (binary only, rc files untouched) and links `~/.fzf/bin/fzf` into `~/.local/bin`.
@@ -121,7 +122,7 @@ Assumed present, never installed:
 | `bash`, `git`, `curl` | setup itself |
 | `zsh` | the zsh config; it's configured even if zsh isn't installed |
 | `ag` (the_silver_searcher) | `FZF_DEFAULT_COMMAND`, so fzf's Ctrl-T / Alt-C file lists |
-| `jq`, `tailscale` | `tnsearch`, `tnssh`, `tninfo` in `aliases` |
+| `jq`, `tailscale` | `tnsearch`, `tnssh`, `tninfo` in `aliases`; the tailnet machine name in the prompt (optional) |
 | Homebrew at `/opt/homebrew` | only on Apple Silicon macOS |
 
 ## Rules for changes

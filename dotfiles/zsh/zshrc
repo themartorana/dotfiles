@@ -28,6 +28,18 @@ compinit -C
 source $HOME/.antidote/antidote.zsh
 antidote load ~/.zsh_plugins.txt
 
+# Tailnet machine name for the prompt (see starship.toml). Looked up once per
+# shell and inherited by child shells; cleared when MACHINE_NAME overrides it.
+if [ -n "${MACHINE_NAME:-}" ]; then
+    unset TAILNET_HOSTNAME
+elif [ -z "${TAILNET_HOSTNAME:-}" ] \
+    && command -v tailscale >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+    TAILNET_HOSTNAME="$(tailscale status --self --peers=false --json 2>/dev/null \
+        | jq -r '.Self.DNSName // empty' 2>/dev/null)"
+    TAILNET_HOSTNAME="${TAILNET_HOSTNAME%%.*}"
+    if [ -n "$TAILNET_HOSTNAME" ]; then export TAILNET_HOSTNAME; else unset TAILNET_HOSTNAME; fi
+fi
+
 # Starship
 eval "$(starship init zsh)"
 
