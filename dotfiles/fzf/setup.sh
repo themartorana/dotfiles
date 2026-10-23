@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+source "$HOME/.dotfiles/dotfiles/utilities.sh"
+
 # Install FZF
 if [ ! -d ~/.fzf ]; then
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf || {
@@ -9,11 +11,10 @@ if [ ! -d ~/.fzf ]; then
     }
 else
     # Shell integration needs fzf >= 0.48 (`fzf --bash` / `fzf --zsh`)
-    git -C ~/.fzf pull --ff-only || echo "Warning: could not update ~/.fzf"
+    git_update ~/.fzf
 fi
 
 # Binary only: don't touch rc files (they're tracked symlinks) or add PATH
 # entries. Key bindings/completion are loaded in bashrc/zshrc via fzf itself.
 ~/.fzf/install --bin
-mkdir -p ~/.local/bin
-ln -sf ~/.fzf/bin/fzf ~/.local/bin/fzf
+link ~/.fzf/bin/fzf ~/.local/bin/fzf
