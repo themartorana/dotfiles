@@ -15,7 +15,7 @@ if [ -n "${MACHINE_NAME:-}" ]; then
 elif [ -z "${TAILNET_HOSTNAME:-}" ] \
     && command -v tailscale >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
     TAILNET_HOSTNAME="$(tailscale status --self --peers=false --json 2>/dev/null \
-        | jq -r '.Self.DNSName // empty' 2>/dev/null)"
+        | jq -r 'select(.BackendState == "Running") | .Self.DNSName // empty' 2>/dev/null)"
     TAILNET_HOSTNAME="${TAILNET_HOSTNAME%%.*}"
     if [ -n "$TAILNET_HOSTNAME" ]; then export TAILNET_HOSTNAME; else unset TAILNET_HOSTNAME; fi
 fi
