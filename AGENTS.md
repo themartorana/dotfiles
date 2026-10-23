@@ -102,7 +102,7 @@ XDG variables are set *after* `.profile.local` loads, using `${VAR:-default}`. A
   - Completions also come from `~/.zsh/completions` and `/opt/homebrew/share/zsh/site-functions`.
 - **bash:** links files only. Creates `~/.bash_history` if missing.
 - **starship:**
-  - Installs to `~/.local/bin` with `curl … | sh` if `starship` isn't on `PATH`.
+  - Installs to `~/.local/bin` with the official installer if `starship` isn't on `PATH`. The installer is downloaded to a temp file before it runs (not `curl | sh`), so a failed download counts as a failure.
   - If the `starship` on `PATH` is `~/.local/bin/starship`, it compares the installed version with the latest GitHub release and re-runs the installer when they differ. A `starship` installed anywhere else (for example by Homebrew) is left to its own updater.
   - Links `~/.config/starship.toml` to the tracked `starship/starship.toml`. On machines set up before this change, the old generated file is renamed to `.bak`. Edit the prompt in the tracked file.
   - That file is the Pure preset (`starship preset pure-preset` from starship 1.27.0) with our changes on top. Top-level keys such as `scan_timeout` must come before any `[table]`.

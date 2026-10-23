@@ -6,9 +6,20 @@ source "$HOME/.dotfiles/dotfiles/utilities.sh"
 # Install starship to ~/.local/bin, or update a copy we installed there.
 # A starship from elsewhere (e.g. Homebrew) is left to its own updater.
 starship_bin="$HOME/.local/bin/starship"
-# The installer's stdout is shell setup advice our rc files already follow.
+# Download the installer to a file first: with `curl | sh`, a failed
+# download looks like success. The installer's stdout is shell setup advice
+# our rc files already follow.
 install_starship() {
-    curl -sS https://starship.rs/install.sh | sh -s -- -y -b "$HOME/.local/bin" >/dev/null
+    local installer rc=0
+    mkdir -p "$HOME/.local/bin"
+    installer="$(mktemp)"
+    if curl -fsSL https://starship.rs/install.sh -o "$installer"; then
+        sh "$installer" -y -b "$HOME/.local/bin" >/dev/null || rc=$?
+    else
+        rc=$?
+    fi
+    rm -f "$installer"
+    return "$rc"
 }
 if ! command -v starship >/dev/null 2>&1; then
     echo "Installing starship to ~/.local/bin"
