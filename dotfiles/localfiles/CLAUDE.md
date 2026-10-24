@@ -42,13 +42,15 @@ Suggest measurable improvements with benchmarks.
 
 2. **Always propagate errors**: Any function that can receive an error from another function, or generates its own errors, must return those errors to the caller. Never swallow errors silently unless explicitly specified otherwise.
 
-3. **Log errors at creation**: Any function that creates an error of any kind is responsible for logging that error at the point of creation.
+3. **Log errors at creation**: Any function that creates an `errorclops.Error` is responsible for logging that error at the point of creation.
 
-4. **Wrap generic errors**: Any function that receives a generic error should wrap it and log it.
+4. **Wrap generic errors**: Any function that receives a generic error should wrap it in an `errorclops.Error` and log it.
+
+5. **Error type by project**: If the project imports `com-flyclops-common` at the `go.mod` level, use `errorclops.Error` objects unless otherwise specified. If `com-flyclops-common` is not imported, the same error handling rules apply but using standard `Error` objects instead.
 
 ---
 
-## Go Code Style
+## Code Style
 
 1. **Error fall-through pattern**: When multiple operations return errors in sequence and each subsequent operation should only run if the previous succeeded, use the `if err == nil` fall-through pattern instead of repeated `if err != nil { return err }` blocks. This reduces nesting and makes the success path clearer.
 
@@ -102,6 +104,14 @@ Suggest measurable improvements with benchmarks.
    golines --base-formatter="gofmt" -m 80 -w {file}
    ```
 
+---
+
+## Data
+
+1. **Transaction lifecycle**: Each `contextclops.Context` object has a single transaction per database. Any save operation on any model must either commit or roll back the transaction.
+
+2. **Copy context for goroutines**: When passing work into a goroutine, copy the context in the caller to give the goroutine its own transaction set. Example: `go someFunction(ctx.Copy())`
+
 -- 
 
 ## Architecture
@@ -110,9 +120,15 @@ Suggest measurable improvements with benchmarks.
 
 ---
 
+## Git
+
+Commit messages should be clear and descriptive, following the [Conventional Commits](https://www.conventionalcommits.org/) specification.
+
+---
+
 ## Testing
 
-<!-- Add testing rules here -->
+Always write tests for new code that's written, if it's not already covered by existing tests, and if it's testable. 
 
 ---
 
