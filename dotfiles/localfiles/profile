@@ -32,6 +32,15 @@ path_append "${EC2_HOME}/bin"
 
 export PATH
 
+# Default editor: first of nvim, vim, vi on PATH; override in .profile.local.
+for _e in nvim vim vi; do
+    if command -v "$_e" >/dev/null 2>&1; then
+        export EDITOR="$_e"
+        break
+    fi
+done
+unset _e
+
 # shellcheck disable=SC1091
 [ -f "${HOME}/.profile.local" ] && . "${HOME}/.profile.local"
 
