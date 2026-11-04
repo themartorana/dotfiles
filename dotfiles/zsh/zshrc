@@ -8,6 +8,10 @@ setopt HIST_FIND_NO_DUPS
 setopt INC_APPEND_HISTORY
 setopt EXTENDED_HISTORY
 
+# Emacs key bindings. Without this, zsh picks vi mode because $EDITOR is a vi.
+# Must come before plugins and fzf bind keys.
+bindkey -e
+
 # fpath for local completions and Homebrew
 fpath=($fpath $HOME/.zsh/completions)
 fpath=($fpath /opt/homebrew/share/zsh/site-functions)
