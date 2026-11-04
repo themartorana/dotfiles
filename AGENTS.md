@@ -88,7 +88,7 @@ Since `.profile` and `.profile.local` are loaded many times, by every kind of sh
 
 Add `PATH` entries with `path_prepend` and `path_append`. They remove an existing copy before adding, so entries never duplicate. Both functions exist only while `.profile` and `.profile.local` are being loaded; they are unset afterwards.
 
-`PATH` precedence, highest first: `~/bin`, `~/.local/bin`, `~/.cargo/bin`, `/opt/homebrew/bin`, `/opt/homebrew/sbin`, the system paths, then `~/.ec2/bin`. The Homebrew entries are harmless on Linux.
+`PATH` precedence, highest first: `~/bin`, `~/.local/bin`, `~/.cargo/bin`, `$GOBIN` (if unset and `go` is on `PATH` at that point, it's exported from `go env GOBIN`, else `$(go env GOPATH)/bin`, so child shells skip the lookup), `/opt/homebrew/bin`, `/opt/homebrew/sbin`, the system paths, then `~/.ec2/bin`. The Homebrew entries are harmless on Linux.
 
 XDG variables are set *after* `.profile.local` loads, using `${VAR:-default}`. A value set in `.profile.local` therefore wins.
 

@@ -22,6 +22,26 @@ path_append() { _path_without "$1"; PATH="${_p:+$_p:}$1"; unset _p; }
 # Look locally first. Prepends run bottom-up: the last line ends up first.
 path_prepend /opt/homebrew/sbin
 path_prepend /opt/homebrew/bin
+# Go binaries (go install), only if go is on PATH by now. GOBIN caches the
+# answer for child shells (go env costs ~30ms); exporting it is harmless
+# because it's exactly where go install already puts binaries.
+if [ -z "$GOBIN" ] && command -v go >/dev/null 2>&1; then
+    # One call, two lines: GOBIN (from go env -w, may be empty), then GOPATH.
+    _goenv="$(go env GOBIN GOPATH 2>/dev/null)"
+    _gobin="${_goenv%%
+*}"
+    _gopath="${_goenv#*
+}"
+    # GOPATH may be a list; its first entry holds the binaries.
+    _gopath="${_gopath%%:*}"
+    if [ -n "$_gobin" ]; then
+        export GOBIN="$_gobin"
+    elif [ -n "$_gopath" ]; then
+        export GOBIN="${_gopath}/bin"
+    fi
+    unset _goenv _gobin _gopath
+fi
+[ -n "$GOBIN" ] && path_prepend "$GOBIN"
 path_prepend "${HOME}/.cargo/bin"
 path_prepend "${HOME}/.local/bin"
 path_prepend "${HOME}/bin"
