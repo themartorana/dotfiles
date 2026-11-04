@@ -34,6 +34,13 @@ if command -v zsh >/dev/null 2>&1; then
     zsh -c "source '$ZDOTDIR/.antidote/antidote.zsh' \
         && antidote bundle < ~/.zsh_plugins.txt >/dev/null && antidote update" \
         || echo "Warning: antidote update failed"
+
+    # Plugins used to live in antidote's macOS default; zshenv now sets
+    # ANTIDOTE_HOME. Point out the old cache, but never delete it.
+    old_home="$HOME/Library/Caches/antidote"
+    if [ -d "$old_home" ] && [ "$(zsh -c 'print -r -- $ANTIDOTE_HOME')" != "$old_home" ]; then
+        echo "Note: $old_home is no longer used by antidote; remove it if you like."
+    fi
 else
     git_update "$ZDOTDIR/.antidote"
 fi

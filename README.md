@@ -78,7 +78,8 @@ The prompt's branch symbol needs a [Nerd Font](https://www.nerdfonts.com); colou
 
 | Path | What |
 |---|---|
-| `~/.antidote` | antidote (zsh plugin manager), plus its plugins |
+| `~/.antidote` | antidote (zsh plugin manager) |
+| `~/.cache/antidote` | zsh plugin clones (`ANTIDOTE_HOME`, set in `zshenv`) |
 | `~/.fzf` | fzf clone; binary linked to `~/.local/bin/fzf` |
 | `~/.local/bin/starship` | starship, unless already installed elsewhere (e.g. Homebrew) |
 
