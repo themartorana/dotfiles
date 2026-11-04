@@ -110,7 +110,7 @@ Use the `.local` files, never the tracked ones:
 - Secrets and tokens.
 - `EDITOR`: defaults to the first of `nvim`, `vim`, `vi`; override in `~/.profile.local`.
 
-**Prompt machine name:** the first of `$MACHINE_NAME` (set in `~/.profile.local`), the Tailscale MagicDNS name, or the short hostname. Useful for sandboxes and containers with random hostnames.
+**Prompt machine name:** the first of `$MACHINE_NAME` (`export` it in `~/.profile.local`), the Tailscale MagicDNS name, or the short hostname. Useful for sandboxes and containers with random hostnames.
 
 ## What you get
 
