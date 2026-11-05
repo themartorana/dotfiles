@@ -88,3 +88,6 @@ export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/${UID:-$(id -u)}}"
+
+# herdr-core socket; will not override a value set in .profile.local
+export HC_SOCKET="${HC_SOCKET:-$HOME/.local/state/herdr-core/default/default.sock}"
