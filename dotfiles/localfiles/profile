@@ -44,6 +44,41 @@ unset _e
 # shellcheck disable=SC1091
 [ -f "${HOME}/.profile.local" ] && . "${HOME}/.profile.local"
 
+# Go binaries (go install), appended to the end of PATH. Resolved after
+# .profile.local so its GOPATH, GOBIN or go install location count. An
+# exported GOBIN is used as is. Otherwise go env (~30ms) is asked once and the
+# answer cached in DOTFILES_GOBIN for child shells. Never export GOBIN
+# ourselves: Go refuses cross-compiled installs when GOBIN is set.
+if [ -n "${GOBIN:-}" ]; then
+    _gobin="$GOBIN"
+elif [ -n "${DOTFILES_GOBIN:-}" ]; then
+    _gobin="$DOTFILES_GOBIN"
+elif command -v go >/dev/null 2>&1; then
+    # One call, two lines: GOBIN (from go env -w, may be empty), then GOPATH.
+    # A failing go (e.g. a version-manager shim with no version) means no dir,
+    # not an aborted profile under set -e.
+    _goenv="$(go env GOBIN GOPATH 2>/dev/null)" || _goenv=
+    _gobin="${_goenv%%
+*}"
+    if [ -z "$_gobin" ]; then
+        _gobin="${_goenv#*
+}"
+        # GOPATH may be a list; its first entry holds the binaries.
+        _gobin="${_gobin%%:*}"
+        [ -n "$_gobin" ] && _gobin="${_gobin}/bin"
+    fi
+    [ -n "$_gobin" ] && export DOTFILES_GOBIN="$_gobin"
+    unset _goenv
+fi
+# Append only if missing: path_append would move an entry that's already in
+# PATH (e.g. GOBIN=~/.local/bin) to the end.
+case ":$PATH:" in
+    *":${_gobin:-}:"*) ;;
+    *) [ -n "${_gobin:-}" ] && path_append "$_gobin" ;;
+esac
+unset _gobin
+export PATH
+
 unset -f _path_without path_prepend path_append
 
 # XDG Base Directory Specification
