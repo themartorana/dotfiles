@@ -31,9 +31,22 @@ link "$DOTFILES"/dotfiles/zsh/zsh_plugins.txt ~/.zsh_plugins.txt
 # missing ones (`antidote update` errors when there are none). Without zsh,
 # only antidote itself can be updated.
 if command -v zsh >/dev/null 2>&1; then
-    zsh -c "source '$ZDOTDIR/.antidote/antidote.zsh' \
-        && antidote bundle < ~/.zsh_plugins.txt >/dev/null && antidote update" \
-        || echo "Warning: antidote update failed"
+    if zsh -c "source '$ZDOTDIR/.antidote/antidote.zsh' \
+        && antidote bundle < ~/.zsh_plugins.txt >/dev/null && antidote update"; then
+        # Plugins used to live in antidote's macOS default; zshenv now sets
+        # ANTIDOTE_HOME. Point out the old cache, but never delete it. Only
+        # after a successful update: until then the old cache may be the only
+        # working copy.
+        old_home="$HOME/Library/Caches/antidote"
+        # -ef compares the directories themselves, so a trailing slash or a
+        # symlink to the old cache still counts as the same place.
+        new_home="$(zsh -c 'print -r -- $ANTIDOTE_HOME')"
+        if [ -d "$old_home" ] && ! [ "$old_home" -ef "$new_home" ]; then
+            echo "Note: antidote plugins now live in \$ANTIDOTE_HOME. Once a new zsh loads them from there, $old_home can be removed."
+        fi
+    else
+        echo "Warning: antidote update failed"
+    fi
 else
     git_update "$ZDOTDIR/.antidote"
 fi

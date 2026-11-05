@@ -98,6 +98,7 @@ XDG variables are set *after* `.profile.local` loads, using `${VAR:-default}`. A
 
 - **zsh:**
   - Clones [antidote](https://github.com/mattmc3/antidote) to `${ZDOTDIR:-$HOME}/.antidote`. `zshrc` loads it from `$HOME/.antidote`.
+  - `zshenv` exports `ANTIDOTE_HOME` as `${XDG_CACHE_HOME:-~/.cache}/antidote` (unless already set, e.g. in `.zshenv.local`), so plugin clones live there on every OS instead of antidote's macOS default `~/Library/Caches/antidote`. After a successful update, if `~/Library/Caches/antidote` still exists and `ANTIDOTE_HOME` points elsewhere, setup prints a note; it never deletes it. No note after a failed update, since the old cache may be the only working copy.
   - On every run, if `zsh` is installed: `antidote bundle` clones any missing plugins, then `antidote update` updates the plugins and antidote. Without `zsh`, it only pulls antidote. A failed update prints a warning and setup continues.
   - Plugins are listed in `zsh_plugins.txt`: zsh-async, zsh-completions, zsh-autosuggestions, fast-syntax-highlighting, history-substring-search.
   - Completions also come from `~/.zsh/completions` and `/opt/homebrew/share/zsh/site-functions`.
