@@ -38,7 +38,10 @@ if command -v zsh >/dev/null 2>&1; then
         # after a successful update: until then the old cache may be the only
         # working copy.
         old_home="$HOME/Library/Caches/antidote"
-        if [ -d "$old_home" ] && [ "$(zsh -c 'print -r -- $ANTIDOTE_HOME')" != "$old_home" ]; then
+        # -ef compares the directories themselves, so a trailing slash or a
+        # symlink to the old cache still counts as the same place.
+        new_home="$(zsh -c 'print -r -- $ANTIDOTE_HOME')"
+        if [ -d "$old_home" ] && ! [ "$old_home" -ef "$new_home" ]; then
             echo "Note: antidote plugins now live in \$ANTIDOTE_HOME. Once a new zsh loads them from there, $old_home can be removed."
         fi
     else
