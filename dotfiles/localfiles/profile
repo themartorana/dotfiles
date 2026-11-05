@@ -18,30 +18,22 @@ _path_without() {
 }
 path_prepend() { _path_without "$1"; PATH="$1${_p:+:$_p}"; unset _p; }
 path_append() { _path_without "$1"; PATH="${_p:+$_p:}$1"; unset _p; }
+# Move $1 to just after $2 in PATH, or to the front if $2 isn't in PATH.
+_path_after() {
+    _path_without "$1"
+    _p=":$_p:"
+    case "$_p" in
+        *":$2:"*) _p="${_p%%":$2:"*}:$2:$1:${_p#*":$2:"}" ;;
+        *) _p=":$1$_p" ;;
+    esac
+    _p="${_p#:}"
+    PATH="${_p%:}"
+    unset _p
+}
 
 # Look locally first. Prepends run bottom-up: the last line ends up first.
 path_prepend /opt/homebrew/sbin
 path_prepend /opt/homebrew/bin
-# Go binaries (go install), only if go is on PATH by now. GOBIN caches the
-# answer for child shells (go env costs ~30ms); exporting it is harmless
-# because it's exactly where go install already puts binaries.
-if [ -z "$GOBIN" ] && command -v go >/dev/null 2>&1; then
-    # One call, two lines: GOBIN (from go env -w, may be empty), then GOPATH.
-    _goenv="$(go env GOBIN GOPATH 2>/dev/null)"
-    _gobin="${_goenv%%
-*}"
-    _gopath="${_goenv#*
-}"
-    # GOPATH may be a list; its first entry holds the binaries.
-    _gopath="${_gopath%%:*}"
-    if [ -n "$_gobin" ]; then
-        export GOBIN="$_gobin"
-    elif [ -n "$_gopath" ]; then
-        export GOBIN="${_gopath}/bin"
-    fi
-    unset _goenv _gobin _gopath
-fi
-[ -n "$GOBIN" ] && path_prepend "$GOBIN"
 path_prepend "${HOME}/.cargo/bin"
 path_prepend "${HOME}/.local/bin"
 path_prepend "${HOME}/bin"
@@ -64,7 +56,35 @@ unset _e
 # shellcheck disable=SC1091
 [ -f "${HOME}/.profile.local" ] && . "${HOME}/.profile.local"
 
-unset -f _path_without path_prepend path_append
+# Go binaries (go install), placed just after ~/.cargo/bin. Resolved after
+# .profile.local so its GOPATH, GOBIN or go install location count. An
+# exported GOBIN is used as is. Otherwise go env (~30ms) is asked once and the
+# answer cached in DOTFILES_GOBIN for child shells. Never export GOBIN
+# ourselves: Go refuses cross-compiled installs when GOBIN is set.
+if [ -n "${GOBIN:-}" ]; then
+    _gobin="$GOBIN"
+elif [ -n "${DOTFILES_GOBIN:-}" ]; then
+    _gobin="$DOTFILES_GOBIN"
+elif command -v go >/dev/null 2>&1; then
+    # One call, two lines: GOBIN (from go env -w, may be empty), then GOPATH.
+    _goenv="$(go env GOBIN GOPATH 2>/dev/null)"
+    _gobin="${_goenv%%
+*}"
+    if [ -z "$_gobin" ]; then
+        _gobin="${_goenv#*
+}"
+        # GOPATH may be a list; its first entry holds the binaries.
+        _gobin="${_gobin%%:*}"
+        [ -n "$_gobin" ] && _gobin="${_gobin}/bin"
+    fi
+    [ -n "$_gobin" ] && export DOTFILES_GOBIN="$_gobin"
+    unset _goenv
+fi
+[ -n "${_gobin:-}" ] && _path_after "$_gobin" "${HOME}/.cargo/bin"
+unset _gobin
+export PATH
+
+unset -f _path_without _path_after path_prepend path_append
 
 # XDG Base Directory Specification
 # Will not override specifications in .profile.local

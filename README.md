@@ -98,7 +98,7 @@ The prompt's branch symbol needs a [Nerd Font](https://www.nerdfonts.com); colou
 - **zsh:** `.zshenv` → `.profile`; `.zprofile` → `.profile` again (macOS `path_helper` reorders `PATH` in between); `.zshrc` → history, completion, antidote plugins, starship, fzf, `~/.aliases`, `~/.zshrc.local`.
 - **bash:** `.bash_profile` → `.profile`, then `.bashrc` if interactive; `.bashrc` → `.profile`, history, starship, fzf, `~/.aliases`, `~/.bashrc.local`.
 
-`PATH` precedence: `~/bin`, `~/.local/bin`, `~/.cargo/bin`, Go's `$GOBIN` (if `go` is installed), `/opt/homebrew/bin`, `/opt/homebrew/sbin`, system paths, `~/.ec2/bin`.
+`PATH` precedence: `~/bin`, `~/.local/bin`, `~/.cargo/bin`, Go's bin directory (if `go` is installed), `/opt/homebrew/bin`, `/opt/homebrew/sbin`, system paths, `~/.ec2/bin`.
 
 ## Customising a machine
 
