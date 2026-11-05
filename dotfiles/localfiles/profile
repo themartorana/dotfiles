@@ -67,7 +67,9 @@ elif [ -n "${DOTFILES_GOBIN:-}" ]; then
     _gobin="$DOTFILES_GOBIN"
 elif command -v go >/dev/null 2>&1; then
     # One call, two lines: GOBIN (from go env -w, may be empty), then GOPATH.
-    _goenv="$(go env GOBIN GOPATH 2>/dev/null)"
+    # A failing go (e.g. a version-manager shim with no version) means no dir,
+    # not an aborted profile under set -e.
+    _goenv="$(go env GOBIN GOPATH 2>/dev/null)" || _goenv=
     _gobin="${_goenv%%
 *}"
     if [ -z "$_gobin" ]; then
@@ -80,7 +82,11 @@ elif command -v go >/dev/null 2>&1; then
     [ -n "$_gobin" ] && export DOTFILES_GOBIN="$_gobin"
     unset _goenv
 fi
-[ -n "${_gobin:-}" ] && _path_after "$_gobin" "${HOME}/.cargo/bin"
+# Already one of ours (e.g. GOBIN=~/.local/bin): keep its place.
+case "${_gobin:-}" in
+    "" | "${HOME}/bin" | "${HOME}/.local/bin" | "${HOME}/.cargo/bin") ;;
+    *) _path_after "$_gobin" "${HOME}/.cargo/bin" ;;
+esac
 unset _gobin
 export PATH
 
