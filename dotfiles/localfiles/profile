@@ -18,18 +18,6 @@ _path_without() {
 }
 path_prepend() { _path_without "$1"; PATH="$1${_p:+:$_p}"; unset _p; }
 path_append() { _path_without "$1"; PATH="${_p:+$_p:}$1"; unset _p; }
-# Move $1 to just after $2 in PATH, or to the front if $2 isn't in PATH.
-_path_after() {
-    _path_without "$1"
-    _p=":$_p:"
-    case "$_p" in
-        *":$2:"*) _p="${_p%%":$2:"*}:$2:$1:${_p#*":$2:"}" ;;
-        *) _p=":$1$_p" ;;
-    esac
-    _p="${_p#:}"
-    PATH="${_p%:}"
-    unset _p
-}
 
 # Look locally first. Prepends run bottom-up: the last line ends up first.
 path_prepend /opt/homebrew/sbin
@@ -56,7 +44,7 @@ unset _e
 # shellcheck disable=SC1091
 [ -f "${HOME}/.profile.local" ] && . "${HOME}/.profile.local"
 
-# Go binaries (go install), placed just after ~/.cargo/bin. Resolved after
+# Go binaries (go install), appended to the end of PATH. Resolved after
 # .profile.local so its GOPATH, GOBIN or go install location count. An
 # exported GOBIN is used as is. Otherwise go env (~30ms) is asked once and the
 # answer cached in DOTFILES_GOBIN for child shells. Never export GOBIN
@@ -82,15 +70,16 @@ elif command -v go >/dev/null 2>&1; then
     [ -n "$_gobin" ] && export DOTFILES_GOBIN="$_gobin"
     unset _goenv
 fi
-# Already one of ours (e.g. GOBIN=~/.local/bin): keep its place.
-case "${_gobin:-}" in
-    "" | "${HOME}/bin" | "${HOME}/.local/bin" | "${HOME}/.cargo/bin") ;;
-    *) _path_after "$_gobin" "${HOME}/.cargo/bin" ;;
+# Append only if missing: path_append would move an entry that's already in
+# PATH (e.g. GOBIN=~/.local/bin) to the end.
+case ":$PATH:" in
+    *":${_gobin:-}:"*) ;;
+    *) [ -n "${_gobin:-}" ] && path_append "$_gobin" ;;
 esac
 unset _gobin
 export PATH
 
-unset -f _path_without _path_after path_prepend path_append
+unset -f _path_without path_prepend path_append
 
 # XDG Base Directory Specification
 # Will not override specifications in .profile.local
