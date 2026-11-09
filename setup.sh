@@ -69,6 +69,11 @@ SELECTED=""
 if [ -n "$only" ]; then
     local _names=" " _want
     for _mod in "${MODULES[@]}"; do _names="$_names${_mod%%|*} "; done
+    # read stops at a newline, which would silently drop the rest.
+    case "$only" in *$'\n'*)
+        echo "Error: --only takes a comma-separated list." >&2
+        exit 2 ;;
+    esac
     IFS=, read -r -a _want <<< "$only"
     for _mod in "${_want[@]}"; do
         [ -n "$_mod" ] || continue
