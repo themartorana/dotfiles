@@ -15,7 +15,7 @@ Each machine adds its own settings through untracked `*.local` files.
 setup.sh                 entry point; sources the per-module setup scripts
 dotfiles/
   utilities.sh           link, seed_local, git_update, echo_section (shared by setup scripts)
-  localfiles/            shell-agnostic files: profile, aliases, CLAUDE.md
+  localfiles/            shell-agnostic files: profile, aliases, CLAUDE.md (the localfiles module)
   zsh/                   zshenv, zprofile, zshrc, zsh_plugins.txt (antidote)
   bash/                  bash_profile, bashrc
   starship/              starship.toml (prompt config)
@@ -57,21 +57,26 @@ Install: `git clone https://github.com/themartorana/dotfiles.git ~/.dotfiles`, t
 In order, the script does this:
 
 1. **If sourced, re-runs itself in a child `bash` and returns its exit code.** This works from bash or zsh. Nothing leaks into the caller's shell, but the caller also doesn't pick up the new `PATH`, so start a new shell afterwards. Everything below therefore always runs in its own bash process, inside a `main` function. Bash parses the whole function before running it, so a pull that rewrites `setup.sh` can't corrupt the run in progress.
-2. **Finds its own location**: `DOTFILES` is the clone's physical path (`pwd -P` of `setup.sh`'s directory). It's exported, and `utilities.sh` is loaded from there. The only option is `--relocate` (see the next step).
-3. **Guards against relinking from another clone.** The `~/.profile` link shows which clone home is linked from now. If that's a different clone and it still has a `setup.sh`, setup stops and says to run that clone's `setup.sh`, or to re-run with `--relocate` to switch. This prevents a temporary checkout or worktree from taking over home. If the old clone is gone, setup relinks without asking.
-4. **Pulls the clone.** If `DOTFILES` is the top of a git clone, it runs `git pull --ff-only` there. If `HEAD` moved, it `exec`s the new `setup.sh` with `DOTFILES_PULLED=1`, which skips this step. A failed pull (offline, diverged, local changes in the way, no upstream, detached `HEAD`) prints a warning and setup continues with the files it has; fixing the clone is up to the user. A clone without git gets a warning and is used as is.
+2. **Finds its own location**: `DOTFILES` is the clone's physical path (`pwd -P` of `setup.sh`'s directory). It's exported, and `utilities.sh` is loaded from there. Options:
+   - `--relocate`: see the next step.
+   - `--ls`: prints the modules (name and description) and exits before anything else runs.
+   - `--only a,b`: runs only those modules (also `--only=a,b`, repeatable). They still run in the fixed order. An unknown name, or `--only` with `--relocate`, exits 2.
+   - Anything else exits 2 with usage.
+3. **Guards against relinking from another clone.** The `~/.profile` link shows which clone home is linked from now. If that's a different clone and it still has a `setup.sh`, setup stops and says to run that clone's `setup.sh`, or to re-run with `--relocate` to switch. This prevents a temporary checkout or worktree from taking over home. If the old clone is gone, setup relinks without asking. A relink always needs a full run: with `--only`, setup stops instead, so home is never linked from two clones.
+4. **Pulls the clone.** If `DOTFILES` is the top of a git clone, it runs `git pull --ff-only` there. If `HEAD` moved, it `exec`s the new `setup.sh` with the original arguments and `DOTFILES_PULLED=1`, which skips this step. A failed pull (offline, diverged, local changes in the way, no upstream, detached `HEAD`) prints a warning and setup continues with the files it has; fixing the clone is up to the user. A clone without git gets a warning and is used as is.
 5. **Puts `~/.local/bin` first in `PATH`.** Every tool setup installs goes there.
 6. **Blocks sudo.** It writes a fake `sudo` to `${XDG_CACHE_HOME:-~/.cache}/dotfiles/sudo-shim` and puts it first in `PATH`. Any `sudo` call exits 1 and is logged to `${XDG_STATE_HOME:-~/.local/state}/dotfiles/setup.log`. An EXIT `trap` removes the fake, including when setup fails.
 7. **Creates `~/bin`, `~/code`, `~/.config` and `~/.local/bin`.**
-8. **Links** `profile`, `aliases` and `CLAUDE.md` and seeds their `.local` files.
-9. **Sources module setup scripts in this order:** `zsh` → `bash` → `starship` → `fzf`. Both shells are always configured, whatever `$SHELL` is. Setup never runs `chsh`.
-10. **Removes stale links** (`prune_links`):
-    - **Manifest.** Every `link` call appends `dst<TAB>src` to a new manifest. Entries in the previous manifest, `${XDG_STATE_HOME:-~/.local/state}/dotfiles/links`, that this run didn't link are removed, but only if they still point at the recorded source.
+8. **Sources the module setup scripts** listed in the `MODULES` table in `main`, in this order: `localfiles` (links `profile`, `aliases` and `CLAUDE.md` and seeds their `.local` files) → `zsh` → `bash` → `starship` → `fzf`. With `--only`, only the chosen modules run. A full run configures both shells, whatever `$SHELL` is. Setup never runs `chsh`.
+9. **Removes stale links** (`prune_links`):
+    - **Manifests.** There's one per module, `${XDG_STATE_HOME:-~/.local/state}/dotfiles/links.d/<module>`, one `dst<TAB>src` per line. While a module runs, its `link` calls write to a new copy of its manifest (`DOTFILES_LINKS_NEW`). Entries in the old manifests that no module linked this run are removed, but only if they are under `$HOME` and still point at the recorded source. The `$HOME` check stops a run with a different `HOME` but the same `XDG_STATE_HOME` from pruning the real home. A partial run checks only the manifests of the modules it ran, and treats the old manifests of the modules that didn't run as still linked, so a link that moved between modules survives.
+    - **Legacy manifest.** The old single manifest, `dotfiles/links`, is appended to `links.d/_legacy` and deleted. Only a full run prunes it.
+    - Setup refuses to run (exit 1) if `links.d` is a symlink.
     - **Broken links.** Symlinks in `~`, `~/.config`, `~/.claude` and `~/.local/bin` that point into the clone, or the clone setup relinked from, at a file that no longer exists are removed. This catches links made before the manifest existed.
-    - The new manifest then replaces the old one. A run that fails earlier doesn't prune anything and keeps the old manifest.
-11. **Points out an unused `~/.dotfiles`.** Older setups copied devcontainer and Codespaces clones into `~/.dotfiles`. If `~/.dotfiles` exists and isn't the clone, setup prints a note. It never deletes it, because it may hold edits. Their links still point into `~/.dotfiles`, so the first run from the devcontainer clone stops at step 3 until it's re-run with `--relocate`.
+    - The new manifests then replace the old ones. A full run also deletes the manifests it didn't replace (`_legacy`, removed modules); a partial run replaces only the manifests of the modules it ran. A run that fails earlier doesn't prune anything and keeps the old manifests.
+10. **Points out an unused `~/.dotfiles`.** Older setups copied devcontainer and Codespaces clones into `~/.dotfiles`. If `~/.dotfiles` exists and isn't the clone, setup prints a note. It never deletes it, because it may hold edits. Their links still point into `~/.dotfiles`, so the first run from the devcontainer clone stops at step 3 until it's re-run with `--relocate`.
 
-Module scripts are **sourced** into setup's bash process, not executed. Each one must be safe to run again on every replay. Their `set -e`, exported variables (for example `ZDOTDIR`) and any `exit` affect, or end, the whole setup run, never the user's shell. A module that fails should `exit 1` with a message.
+Module scripts are **sourced** into setup's bash process, not executed. `main`'s loop variables start with `_` to stay clear of the modules' variables. Each one must be safe to run again on every replay. Their `set -e`, exported variables (for example `ZDOTDIR`) and any `exit` affect, or end, the whole setup run, never the user's shell. A module that fails should `exit 1` with a message.
 
 ## Shell load order and `.profile`
 
@@ -150,7 +155,7 @@ Assumed present, never installed:
 - **Shared files must work on macOS and Linux.** Watch for BSD vs. GNU differences (`ls`, `sed -i`, `grep`, `date`).
 - **Adding a module:**
   1. Create `dotfiles/<name>/setup.sh` that starts with `#!/usr/bin/env bash`, `set -e`, sets `DOTFILES` from its own location like the existing modules do, and sources `$DOTFILES/dotfiles/utilities.sh`. Refer to repo files as `"$DOTFILES"/dotfiles/...`, never `~/.dotfiles`, so the module also works when run on its own.
-  2. Add an `echo_section` + `source "$DOTFILES/dotfiles/<name>/setup.sh"` pair to `main` in the root `setup.sh`.
+  2. Add a `"<name>|<description>"` entry to the `MODULES` table in `main` in the root `setup.sh`, in the position where it should run.
   3. Machines already set up pick it up the next time they run `setup.sh`.
 - **Commit messages** follow Conventional Commits (`feat:`, `fix(starship):`, `refactor:` …).
 - There are no tests or CI.

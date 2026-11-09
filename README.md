@@ -32,14 +32,15 @@ Then **open a new shell**.
 - **`--relocate`.** After moving the clone, or to switch to a different clone, run `setup.sh --relocate` from the new location. Without it, setup refuses to relink from a second clone while the original still exists (so a temp checkout or worktree can't take over `~`).
 - **Devcontainers and Codespaces.** Set your editor's "dotfiles repository" to this repo; it clones and runs `setup.sh` for you.
 - **Updating.** Just run `setup.sh` again.
+- **Some modules only.** `setup.sh --only starship,fzf` re-runs just those modules (still in the usual order), and `setup.sh --ls` lists them. Other modules' links are left alone.
 
 ### What a run does
 
 1. Pulls the clone (`git pull --ff-only`) and restarts itself if `HEAD` moved. A failed pull warns and continues with the current files.
 2. Blocks `sudo` for the duration of the run.
 3. Creates `~/bin`, `~/code`, `~/.config`, `~/.local/bin`.
-4. Links shared files, then runs the modules in order: **zsh** → **bash** → **starship** → **fzf**.
-5. Removes stale links: ones recorded in the previous run that the repo no longer makes, and broken symlinks pointing into the clone.
+4. Runs the modules in order: **localfiles** (profile, aliases, CLAUDE.md) → **zsh** → **bash** → **starship** → **fzf**, or only the `--only` ones.
+5. Removes stale links: ones the previous run recorded that the repo no longer makes (for a partial run, only within the modules that ran), and broken symlinks pointing into the clone.
 
 ### Requirements
 
@@ -87,7 +88,7 @@ The prompt's branch symbol needs a [Nerd Font](https://www.nerdfonts.com); colou
 
 | Path | What |
 |---|---|
-| `~/.local/state/dotfiles/links` | manifest of links made, used to prune stale ones |
+| `~/.local/state/dotfiles/links.d/<module>` | per-module manifest of links made, used to prune stale ones |
 | `~/.local/state/dotfiles/setup.log` | blocked `sudo` attempts |
 | `~/.cache/dotfiles/sudo-shim` | the `sudo` stub (removed when setup exits) |
 
@@ -125,7 +126,7 @@ Use the `.local` files, never the tracked ones:
 setup.sh        entry point
 dotfiles/
   utilities.sh  helpers shared by setup scripts (link, seed_local, git_update)
-  localfiles/   profile, aliases, global CLAUDE.md
+  localfiles/   profile, aliases, global CLAUDE.md (localfiles module)
   zsh/          zsh config and plugin list
   bash/         bash config
   starship/     prompt config

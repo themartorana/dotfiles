@@ -13,7 +13,12 @@ if [ -n "$_dotfiles_setup" ]; then
     bash "$_dotfiles_setup" "$@"
     _dotfiles_rc=$?
     unset _dotfiles_setup
-    [ "$_dotfiles_rc" -eq 0 ] && echo "Done. Start a new shell to pick up the changes."
+    if [ "$_dotfiles_rc" -eq 0 ]; then
+        case " $* " in
+            *" --ls "*) ;;
+            *) echo "Done. Start a new shell to pick up the changes." ;;
+        esac
+    fi
     # eval expands the status before the unset runs
     eval "unset _dotfiles_rc; return $_dotfiles_rc"
 fi
@@ -24,14 +29,64 @@ set -e
 # Everything runs inside main() so bash parses it all up front: a `git pull`
 # that rewrites this file mid-run can't change what's executing.
 main() {
-local relocate=""
+# Modules in the order they run: "name|description". Each is
+# dotfiles/<name>/setup.sh. asdf (dormant) and vscode (deprecated) are left
+# out on purpose.
+local MODULES=(
+    "localfiles|profile, aliases and CLAUDE.md"
+    "zsh|zsh config and antidote plugins"
+    "bash|bash config"
+    "starship|starship prompt binary and config"
+    "fzf|fzf binary"
+)
+
+# Kept whole so a restart after a pull gets the same options.
+local args=("$@") relocate="" list="" only=""
 while [ $# -gt 0 ]; do
     case "$1" in
         --relocate) relocate=1 ;;
-        *) echo "Usage: setup.sh [--relocate]" >&2; exit 2 ;;
+        --ls) list=1 ;;
+        --only)
+            [ $# -ge 2 ] || usage
+            only="$only,$2"; shift ;;
+        --only=*) only="$only,${1#--only=}" ;;
+        *) usage ;;
     esac
     shift
 done
+
+local _mod
+if [ -n "$list" ]; then
+    for _mod in "${MODULES[@]}"; do
+        printf '%-12s %s\n' "${_mod%%|*}" "${_mod#*|}"
+    done
+    exit 0
+fi
+
+# SELECTED is " name name " (space-padded for matching), or empty for a
+# full run.
+SELECTED=""
+if [ -n "$only" ]; then
+    local _names=" " _want
+    for _mod in "${MODULES[@]}"; do _names="$_names${_mod%%|*} "; done
+    IFS=, read -r -a _want <<< "$only"
+    for _mod in "${_want[@]}"; do
+        [ -n "$_mod" ] || continue
+        # Module names are [a-z0-9_-]; anything else (spaces too) can't match.
+        case "$_mod" in *[!a-z0-9_-]*) _names="" ;; esac
+        case "$_names" in
+            *" $_mod "*) SELECTED="${SELECTED:- }$_mod " ;;
+            *)
+                echo "Error: unknown module '$_mod'. Run setup.sh --ls." >&2
+                exit 2 ;;
+        esac
+    done
+    [ -n "$SELECTED" ] || usage
+    if [ -n "$relocate" ]; then
+        echo "Error: --relocate relinks every module; drop --only." >&2
+        exit 2
+    fi
+fi
 
 echo "Setting up via dotfiles..."
 
@@ -55,6 +110,12 @@ if [ -d "$OLD_DOTFILES" ]; then
     OLD_DOTFILES="$(CDPATH='' cd -- "$OLD_DOTFILES" && pwd -P)"
 fi
 if [ -n "$OLD_DOTFILES" ] && [ "$OLD_DOTFILES" != "$DOTFILES" ]; then
+    # A partial relink would leave home linked from two clones.
+    if [ -n "$SELECTED" ]; then
+        echo "Error: your dotfiles are linked from $OLD_DOTFILES." >&2
+        echo "Relinking them needs a full run; drop --only." >&2
+        exit 1
+    fi
     if [ -f "$OLD_DOTFILES/setup.sh" ] && [ -z "$relocate" ]; then
         echo "Error: your dotfiles are linked from $OLD_DOTFILES." >&2
         echo "Run $OLD_DOTFILES/setup.sh instead, or re-run with --relocate" >&2
@@ -76,7 +137,7 @@ if [ -z "${DOTFILES_PULLED:-}" ]; then
         after="$(git -C "$DOTFILES" rev-parse HEAD)"
         if [ "$before" != "$after" ]; then
             echo "Updated to ${after:0:7}; restarting setup."
-            DOTFILES_PULLED=1 exec bash "$DOTFILES/setup.sh" ${relocate:+--relocate}
+            DOTFILES_PULLED=1 exec bash "$DOTFILES/setup.sh" "${args[@]}"
         fi
     else
         echo "Warning: $DOTFILES is not a git clone; using it as is"
@@ -104,10 +165,17 @@ SHIM
 chmod +x "$SUDO_SHIM/sudo"
 export PATH="$SUDO_SHIM:$PATH"
 
-# Every link() call appends to this; it replaces the manifest on success.
-LINKS_MANIFEST="$state_dir/links"
-DOTFILES_LINKS_NEW="$(mktemp "$state_dir/links.XXXXXX")"
-trap 'rm -rf "$SUDO_SHIM" "$DOTFILES_LINKS_NEW"' EXIT
+# One link manifest per module in links.d/<module>. Each module's link()
+# calls go to its own file in LINKS_NEW_DIR, which replaces the old files of
+# the modules that ran once setup succeeds. links is the old single manifest.
+LINKS_DIR="$state_dir/links.d"
+if [ -L "$LINKS_DIR" ]; then
+    echo "Error: $LINKS_DIR is a symlink; refusing to manage it." >&2
+    exit 1
+fi
+LEGACY_MANIFEST="$state_dir/links"
+LINKS_NEW_DIR="$(mktemp -d "$state_dir/links.new.XXXXXX")"
+trap 'rm -rf "$SUDO_SHIM" "$LINKS_NEW_DIR"' EXIT
 
 # Make directories
 mkdir -p ~/bin ~/code ~/.config ~/.local/bin
@@ -115,35 +183,22 @@ mkdir -p ~/bin ~/code ~/.config ~/.local/bin
 # Left over from the old run-once setup
 rm -f "$DOTFILES/initial-setup-done"
 
-# Shell-agnostic files
-link "$DOTFILES/dotfiles/localfiles/profile" "$HOME/.profile"
-seed_local "$DOTFILES/dotfiles/localfiles/profile.local" "$HOME/.profile.local"
-link "$DOTFILES/dotfiles/localfiles/aliases" "$HOME/.aliases"
-seed_local "$DOTFILES/dotfiles/localfiles/aliases.local" "$HOME/.aliases.local"
-link "$DOTFILES/dotfiles/localfiles/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
-
-# Both shells are always configured, whatever $SHELL is.
-echo_section "Setting up zsh..."
-source "$DOTFILES/dotfiles/zsh/setup.sh"
-
-echo_section "Setting up bash..."
-source "$DOTFILES/dotfiles/bash/setup.sh"
-
-# Setup Starship.rs
-echo_section "Setting up Starship..."
-source "$DOTFILES/dotfiles/starship/setup.sh"
-
-# Install ASDF - not by default
-# echo_section "Setting up ASDF..."
-# source "$DOTFILES/dotfiles/asdf/setup.sh"
-
-# Install FZF
-echo_section "Setting up FZF..."
-source "$DOTFILES/dotfiles/fzf/setup.sh"
-
-# # VSCode settings
-# echo_section "Setting up VSCode extensions..."
-# source "$DOTFILES/dotfiles/vscode/setup.sh"
+# Run every module, or only the --only ones, always in MODULES order. Both
+# shells are configured on a full run, whatever $SHELL is. Modules are
+# sourced, so they share this shell: loop variables are _-prefixed to stay
+# clear of theirs.
+local _name
+for _mod in "${MODULES[@]}"; do
+    _name="${_mod%%|*}"
+    if [ -n "$SELECTED" ]; then
+        case "$SELECTED" in *" $_name "*) ;; *) continue ;; esac
+    fi
+    echo_section "Setting up $_name..."
+    DOTFILES_LINKS_NEW="$LINKS_NEW_DIR/$_name"
+    : > "$DOTFILES_LINKS_NEW"
+    source "$DOTFILES/dotfiles/$_name/setup.sh"
+done
+unset DOTFILES_LINKS_NEW
 
 echo_section "Removing stale links..."
 prune_links
@@ -158,23 +213,53 @@ if [ -d "$HOME/.dotfiles" ] \
 fi
 }
 
+usage() {
+    echo "Usage: setup.sh [--relocate] [--only MODULE[,MODULE...]] [--ls]" >&2
+    exit 2
+}
+
 # Remove links this setup made before but no longer makes (still pointing
 # where we left them), and any link into the clone (or the one we relinked
-# from) whose target is gone.
+# from) whose target is gone. A partial (--only) run checks and replaces only
+# the manifests of the modules it ran.
 prune_links() {
-    local dst src target
-    if [ -f "$LINKS_MANIFEST" ]; then
+    local f dst src target seen=()
+    mkdir -p "$LINKS_DIR"
+    # Migrate the old single manifest. Only a full run prunes it. Appended,
+    # so a second copy (say, written by an older clone) loses nothing.
+    if [ -f "$LEGACY_MANIFEST" ]; then
+        cat "$LEGACY_MANIFEST" >> "$LINKS_DIR/_legacy"
+        rm "$LEGACY_MANIFEST"
+    fi
+    # Links still wanted: everything linked this run, plus (on a partial run)
+    # the old manifests of everything that didn't run. A link that moved to
+    # another module is kept either way.
+    seen=("$LINKS_NEW_DIR"/*)
+    if [ -n "$SELECTED" ]; then
+        for f in "$LINKS_DIR"/*; do
+            [ -f "$f" ] || continue
+            case "$SELECTED" in *" ${f##*/} "*) ;; *) seen+=("$f") ;; esac
+        done
+    fi
+    for f in "$LINKS_DIR"/*; do
+        [ -f "$f" ] || continue
+        if [ -n "$SELECTED" ]; then
+            case "$SELECTED" in *" ${f##*/} "*) ;; *) continue ;; esac
+        fi
+        # Old entries that aren't still wanted, in one pass.
         while IFS="$(printf '\t')" read -r dst src; do
             [ -n "$dst" ] || continue
-            # Still linked this run (possibly to a new source): keep it.
-            awk -F '\t' -v d="$dst" '$1 == d { found = 1 } END { exit !found }' \
-                "$DOTFILES_LINKS_NEW" && continue
+            # Only ever touch this $HOME: a run with a different HOME but a
+            # shared XDG_STATE_HOME must not prune the real home's links.
+            case "$dst" in "$HOME"/*) ;; *) continue ;; esac
             if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then
                 rm "$dst"
                 echo "Removed stale link $dst"
             fi
-        done < "$LINKS_MANIFEST"
-    fi
+        done < <(awk -F '\t' -v old="$f" \
+            'FILENAME != old { seen[$1] = 1; next } !($1 in seen)' \
+            "${seen[@]}" "$f")
+    done
     for dst in "$HOME"/.[!.]* "$HOME"/.config/* "$HOME"/.claude/* "$HOME"/.local/bin/*; do
         [ -L "$dst" ] && [ ! -e "$dst" ] || continue
         target="$(readlink "$dst")"
@@ -183,7 +268,15 @@ prune_links() {
                 rm "$dst"; echo "Removed broken link $dst" ;;
         esac
     done
-    mv "$DOTFILES_LINKS_NEW" "$LINKS_MANIFEST"
+    # A full run drops manifests of modules that no longer exist (and
+    # _legacy); a partial run only overwrites the ones it ran. Only manifests
+    # that aren't being replaced are removed, so a failed mv keeps the old.
+    if [ -z "$SELECTED" ]; then
+        for f in "$LINKS_DIR"/*; do
+            [ -e "$LINKS_NEW_DIR/${f##*/}" ] || rm -f "$f"
+        done
+    fi
+    mv "$LINKS_NEW_DIR"/* "$LINKS_DIR"/
 }
 
 main "$@"
